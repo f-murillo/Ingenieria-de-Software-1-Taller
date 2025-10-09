@@ -25,7 +25,7 @@ func TestRegister(t *testing.T) {
 
 	// 🧪 Simulamos una solicitud HTTP POST como si viniera de un formulario web
 	// Enviamos los datos del nuevo usuario en formato x-www-form-urlencoded
-	req := httptest.NewRequest("POST", "/register", strings.NewReader("username=testuser&password=testpass"))
+	req := httptest.NewRequest("POST", "/register", strings.NewReader("username=testuser&password=testpass&role=user"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	// 🧾 Creamos un ResponseRecorder para capturar la respuesta del servidor

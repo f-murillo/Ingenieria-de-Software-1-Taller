@@ -47,6 +47,7 @@ func main() {
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/protected", protected)
+	http.HandleFunc("/check-admin", checkRole)
 
 	log.Println("Server listening on :8080")
 
@@ -161,7 +162,13 @@ func register(w http.ResponseWriter, r *http.Request) {
 
 	username := r.FormValue("username")
 	password := r.FormValue("password")
+	role := r.FormValue("role")
 
+	// Validacion del Role
+	if role != "user" && role != "admin" {
+		http.Error(w, "Rol inválido", http.StatusBadRequest)
+		return
+	}
 	// Basic input validation. Adjust rules to your policy.
 	if len(username) < 8 || len(password) < 8 {
 		http.Error(w, "Invalid username/password", http.StatusNotAcceptable)
@@ -182,7 +189,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Persist the new user row.
-	if err := createUser(username, hashedPassword, "user"); err != nil {
+	if err := createUser(username, hashedPassword, role); err != nil {
 		http.Error(w, "User creation failed", http.StatusInternalServerError)
 		return
 	}
@@ -339,4 +346,36 @@ func logout(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Logged out successfully")
+}
+
+func checkRole(w http.ResponseWriter, r *http.Request) {
+	// Solo aceptar GET
+	if r.Method != http.MethodGet {
+		http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Verificar autenticación y obtener el nombre de usuario
+	username, err := Authorize(r)
+	if err != nil {
+		http.Error(w, "No autenticado o CSRF inválido", http.StatusUnauthorized)
+		return
+	}
+
+	// Buscar al usuario en la base de datos
+	user, err := getUserByUsername(username)
+	if err != nil {
+		http.Error(w, "Usuario no encontrado", http.StatusInternalServerError)
+		return
+	}
+
+	// Verificar el rol
+	switch user.Role.String {
+	case "admin":
+		fmt.Fprintln(w, "✅ El usuario tiene rol de administrador")
+	case "user":
+		fmt.Fprintln(w, "👤 El usuario tiene rol de usuario")
+	default:
+		fmt.Fprintf(w, "❓ Rol desconocido: %s\n", user.Role.String)
+	}
 }
