@@ -9,42 +9,140 @@ import (
 	"testing"
 )
 
-// TestRegister verifica que la función register registre correctamente a un nuevo usuario
-func TestRegister(t *testing.T) {
-	// 🔧 Inicializamos la base de datos para pruebas
-	// Usamos un archivo separado para no afectar la base real
+// Para crear una base de datos temporal para las pruebas
+func setupTestDB(t *testing.T) {
 	var err error
-	db, err = initDB("./test_register.db")
+	db, err = initDB("./test_temp.db")
 	if err != nil {
-		// Si falla la inicialización, detenemos el test
 		t.Fatalf("Error al inicializar la base de datos: %v", err)
 	}
+	t.Cleanup(func() {
+		db.Close()
+		os.Remove("./test_temp.db")
+	})
+}
 
-	// 🧹 Limpiamos el archivo de base de datos al final del test
-	defer os.Remove("./test_register.db")
+func TestRegister(t *testing.T) {
+	setupTestDB(t)
 
-	// 🧪 Simulamos una solicitud HTTP POST como si viniera de un formulario web
-	// Enviamos los datos del nuevo usuario en formato x-www-form-urlencoded
+	// Simulamos una solicitud HTTP POST como si viniera de un formulario web
 	req := httptest.NewRequest("POST", "/register", strings.NewReader("username=testuser&password=testpass&role=user"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	// 🧾 Creamos un ResponseRecorder para capturar la respuesta del servidor
+	// Capturamos la respuesta
 	w := httptest.NewRecorder()
-
-	// 🚪 Llamamos directamente a la función register como si fuera una ruta real
 	register(w, req)
 
-	// 📥 Obtenemos la respuesta simulada
 	resp := w.Result()
 	body, _ := io.ReadAll(resp.Body)
 
-	// ✅ Verificamos que el código de estado sea 201 (Created)
 	if resp.StatusCode != http.StatusCreated {
-		t.Errorf("esperado 201 Created, recibido %d", resp.StatusCode)
+		t.Errorf("Se esperaba 201 Created, se recibio %d", resp.StatusCode)
 	}
-
-	// ✅ Verificamos que el cuerpo de la respuesta contenga el mensaje esperado
 	if !strings.Contains(string(body), "User registered successfully") {
 		t.Errorf("respuesta inesperada: %s", body)
+	}
+}
+
+func TestLogin(t *testing.T) {
+	setupTestDB(t)
+
+	hashed, _ := hashPassword("testpass")
+	err := createUser("testuser", hashed, "user")
+	if err != nil {
+		t.Fatalf("Error al crear usuario: %v", err)
+	}
+
+	req := httptest.NewRequest("POST", "/login", strings.NewReader("username=testuser&password=testpass"))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	w := httptest.NewRecorder()
+
+	login(w, req)
+
+	resp := w.Result()
+	body, _ := io.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Se esperaba 200 OK, se recibio %d", resp.StatusCode)
+	}
+	if !strings.Contains(string(body), "Login Successful") {
+		t.Errorf("Respuesta inesperada: %s", body)
+	}
+}
+
+func TestCheckAdmin(t *testing.T) {
+	setupTestDB(t)
+
+	hashed, _ := hashPassword("adminpass")
+	err := createUser("adminuser", hashed, "admin")
+	if err != nil {
+		t.Fatalf("Error al crear usuario: %v", err)
+	}
+
+	session := generateToken(32)
+	csrf := generateToken(32)
+	err = updateTokens("adminuser", session, csrf)
+	if err != nil {
+		t.Fatalf("Error al guardar tokens: %v", err)
+	}
+
+	req := httptest.NewRequest("GET", "/check-admin", nil)
+	req.AddCookie(&http.Cookie{Name: "session_token", Value: session})
+	req.AddCookie(&http.Cookie{Name: "csrf_token", Value: csrf})
+	req.Header.Set("X-CSRF-Token", csrf)
+	w := httptest.NewRecorder()
+
+	checkRole(w, req)
+
+	resp := w.Result()
+	body, _ := io.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Se esperaba 200 OK, se recibio %d", resp.StatusCode)
+	}
+	if !strings.Contains(string(body), "rol de administrador") {
+		t.Errorf("Respuesta inesperada: %s", body)
+	}
+}
+
+func TestLogout(t *testing.T) {
+	setupTestDB(t)
+
+	hashed, _ := hashPassword("logoutpass")
+	err := createUser("logoutuser", hashed, "user")
+	if err != nil {
+		t.Fatalf("Error al crear usuario: %v", err)
+	}
+	session := generateToken(32)
+	csrf := generateToken(32)
+	err = updateTokens("logoutuser", session, csrf)
+	if err != nil {
+		t.Fatalf("Error al guardar tokens: %v", err)
+	}
+
+	req := httptest.NewRequest("POST", "/logout", nil)
+	req.AddCookie(&http.Cookie{Name: "session_token", Value: session})
+	req.AddCookie(&http.Cookie{Name: "csrf_token", Value: csrf})
+	req.Header.Set("X-CSRF-Token", csrf)
+	w := httptest.NewRecorder()
+
+	logout(w, req)
+
+	resp := w.Result()
+	body, _ := io.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Se esperaba 200 OK, se recibio %d", resp.StatusCode)
+	}
+	if !strings.Contains(string(body), "Logged out successfully") {
+		t.Errorf("Respuesta inesperada: %s", body)
+	}
+
+	user, err := getUserByUsername("logoutuser")
+	if err != nil {
+		t.Fatalf("Error al obtener usuario: %v", err)
+	}
+	if user.SessionToken.Valid || user.CSRFToken.Valid {
+		t.Errorf("Los tokens no fueron eliminados correctamente")
 	}
 }
