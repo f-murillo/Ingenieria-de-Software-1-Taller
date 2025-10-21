@@ -1,0 +1,41 @@
+// Panel.tsx
+
+interface Props {
+  administrador: boolean;
+  onSeleccion: (vista: string) => void;
+  onLogout: () => void;
+  mensaje?: string;
+}
+
+export default function Panel({ administrador, onSeleccion, onLogout, mensaje }: Props) {
+  return (
+    <aside className="w-64 bg-gray-800 text-white p-6 space-y-4 flex-shrink-0">
+      <h3 className="text-lg font-semibold">Menú</h3>
+
+      <button onClick={() => onSeleccion('bienvenida')} className="block w-full text-left hover:underline hover:cursor-pointer">
+        Inicio
+      </button>
+
+      {administrador ? (
+        <>
+          <button onClick={() => onSeleccion('usuarios')} className="block w-full text-left hover:underline hover:cursor-pointer">
+            Gestionar usuarios
+          </button>
+          <button onClick={() => onSeleccion('proyectos')} className="block w-full text-left hover:underline hover:cursor-pointer">
+            Gestionar proyectos
+          </button>
+        </>
+      ) : (
+        <button onClick={() => onSeleccion('ver-proyectos')} className="block w-full text-left hover:underline hover:cursor-pointer">
+          Ver proyectos
+        </button>
+      )}
+
+      <button onClick={onLogout} className="block w-full text-left text-red-300 hover:text-red-500 hover:cursor-pointer">
+        Cerrar sesión
+      </button>
+
+      {mensaje && <p className="text-sm mt-4 text-green-300">{mensaje}</p>}
+    </aside>
+  );
+}
