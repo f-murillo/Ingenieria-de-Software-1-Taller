@@ -7,6 +7,7 @@ import {
   crearProyecto,
   asociarUsuariosAProyecto,
   actualizarProyecto,
+  actualizarEstadoProyecto,
   type Proyecto,
   type ProyectoSinID,
   type Usuario,
@@ -117,16 +118,34 @@ export default function ProjectPanel({ usuario, mostrarToast }: Props) {
   };
 
   const confirmarEdicionProyecto = async (id: number) => {
+    try {
+      const proyectoOriginal = proyectos.find(p => p.id === id);
+      if (!proyectoOriginal) throw new Error('Proyecto no encontrado');
+
+      await actualizarProyecto(id, {
+        ...datosEditados,
+        habilitado: proyectoOriginal.habilitado,
+      });
+
+      const actualizados = await obtenerProyectos();
+      setProyectos(actualizados);
+      setProyectoEditando(null);
+      setDatosEditados({ descripcion: '', fecha_inicio: '', fecha_cierre: '' });
+    } catch {
+      alert('Error al actualizar el proyecto');
+    }
+  };
+
+const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
   try {
-    await actualizarProyecto(id, datosEditados); // esta función la creamos luego
+    await actualizarEstadoProyecto(id, habilitado);
     const actualizados = await obtenerProyectos();
     setProyectos(actualizados);
-    setProyectoEditando(null);
-    setDatosEditados({ descripcion: '', fecha_inicio: '', fecha_cierre: '' });
   } catch {
-    alert('Error al actualizar el proyecto');
+    alert('Error al cambiar el estado del proyecto');
   }
 };
+
 
   return (
     <div className="space-y-6">
@@ -246,32 +265,39 @@ export default function ProjectPanel({ usuario, mostrarToast }: Props) {
                       )}
                     </td>
                   )}
-
                   <td className="p-2 border">
-                    {proyectoEditando === p.id ? (
-                    <button
-                      onClick={() => confirmarEdicionProyecto(p.id)}
-                        className="text-green-600 hover:text-green-800"
-                      >
-                        ✅
-                      </button>
+                    {p.habilitado ? (
+                      proyectoEditando === p.id ? (
+                        <button
+                          onClick={() => confirmarEdicionProyecto(p.id)}
+                          className="text-green-600 hover:text-green-800"
+                        >
+                          ✅
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => iniciarEdicionProyecto(p)}
+                          className="text-yellow-600 hover:text-yellow-800"
+                        >
+                          ✏️
+                        </button>
+                      )
                     ) : (
-                      <button
-                        onClick={() => iniciarEdicionProyecto(p)}
-                        className="text-yellow-600 hover:text-yellow-800"
-                      >
-                        ✏️
-                      </button>
+                      <span className="text-gray-400">🔒</span>
                     )}
                   </td>
                   <td className="p-2 border">
                     <button className="text-blue-600 hover:text-blue-800">📄</button>
                   </td>
                   <td className="p-2 border">
-                    <button className="text-red-600 hover:text-red-800">🚫</button>
+                    <button onClick={() => cambiarEstadoProyecto(p.id, false)}
+                      className="text-red-600 hover:text-red-800"
+                    >🚫</button>
                   </td>
                   <td className="p-2 border">
-                    <button className="text-green-600 hover:text-green-800">✔️</button>
+                    <button onClick={() => cambiarEstadoProyecto(p.id, true)}
+                      className="text-green-600 hover:text-green-800"
+                    >✔️</button>
                   </td>
                   <td className="p-2 border">
                     <button className="text-gray-600 hover:text-gray-800">🖨️</button>
@@ -345,7 +371,7 @@ function FormularioProyecto({ onCrear }: { onCrear: (p: ProyectoSinID) => void }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!descripcion || !inicio) return;
-    onCrear({ descripcion, fecha_inicio: inicio, fecha_cierre: cierre });
+    onCrear({ descripcion, fecha_inicio: inicio, fecha_cierre: cierre, habilitado: true });
     setDescripcion('');
     setInicio('');
     setCierre('');

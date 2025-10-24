@@ -18,6 +18,7 @@ export interface Proyecto {
   descripcion: string;
   fecha_inicio: string;
   fecha_cierre: string;
+  habilitado: boolean;
 }
 
 export type ProyectoSinID = Omit<Proyecto, 'id'>;
@@ -69,6 +70,14 @@ export async function crearProyecto(proyecto: ProyectoSinID): Promise<Proyecto> 
   return res.json();
 }
 
+export async function actualizarEstadoProyecto(id: number, habilitado: boolean): Promise<void> {
+  const res = await fetch(`${API_URL}/api/proyectos/${id}/estado`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ habilitado }),
+  });
+  if (!res.ok) throw new Error('Error al actualizar estado');
+}
 
 
 export async function actualizarProyecto(id: number, proyecto: ProyectoSinID): Promise<Proyecto> {

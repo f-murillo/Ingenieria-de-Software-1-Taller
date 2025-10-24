@@ -96,6 +96,12 @@ func main() {
 				return
 			}
 		}
+
+		if strings.HasSuffix(r.URL.Path, "/estado") && r.Method == http.MethodPut {
+			handlers.ActualizarEstadoProyecto(w, r)
+			return
+		}
+
 		if r.Method == http.MethodPut {
 			handlers.ActualizarProyecto(w, r)
 			return

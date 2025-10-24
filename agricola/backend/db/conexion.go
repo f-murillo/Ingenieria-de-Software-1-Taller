@@ -39,7 +39,8 @@ func Inicializar() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             descripcion TEXT NOT NULL,
             fecha_inicio TEXT NOT NULL,
-            fecha_cierre TEXT
+            fecha_cierre TEXT,
+            habilitado BOOLEAN NOT NULL DEFAULT 1
         );
     `)
 	if err != nil {
