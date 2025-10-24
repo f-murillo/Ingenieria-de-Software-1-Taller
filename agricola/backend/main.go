@@ -11,7 +11,7 @@ import (
 // Funcion para habilitar CORS
 func habilitarCORS(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
 
@@ -46,6 +46,11 @@ func main() {
 
 		if r.Method == http.MethodGet && strings.HasSuffix(r.URL.Path, "/proyectos") {
 			handlers.ObtenerProyectosPorUsuario(w, r)
+			return
+		}
+
+		if r.Method == http.MethodPut && strings.HasSuffix(r.URL.Path, "/rol") {
+			handlers.ActualizarRolUsuario(w, r)
 			return
 		}
 

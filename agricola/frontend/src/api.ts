@@ -86,6 +86,17 @@ export async function eliminarProyecto(id: number): Promise<void> {
   if (!res.ok) throw new Error('Error al eliminar proyecto');
 }
 
+export async function actualizarRolUsuario(id: number, nuevoRol: string): Promise<void> {
+  const res = await fetch(`${API_URL}/api/usuarios/${id}/rol`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nuevoRol }),
+  });
+
+  if (!res.ok) throw new Error('Error al actualizar rol');
+}
+
+
 // Relaciones
 export async function obtenerProyectosPorUsuario(usuarioId: number): Promise<Proyecto[]> {
   const res = await fetch(`${API_URL}/api/usuarios/${usuarioId}/proyectos`);
@@ -93,6 +104,7 @@ export async function obtenerProyectosPorUsuario(usuarioId: number): Promise<Pro
   const data = await res.json();
   return Array.isArray(data) ? data : [];
 }
+
 
 export async function obtenerUsuariosPorProyecto(proyectoId: number): Promise<Usuario[]> {
   const res = await fetch(`${API_URL}/api/proyectos/${proyectoId}/usuarios`);

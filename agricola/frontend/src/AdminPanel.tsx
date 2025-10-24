@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { crearUsuario, obtenerUsuarios, type Usuario } from './api';
-import { obtenerProyectosPorUsuario, type Proyecto } from './api';
+import { obtenerProyectosPorUsuario,actualizarRolUsuario, type Proyecto } from './api';
 
 interface Props {
   creador: string;
@@ -22,6 +22,26 @@ export default function AdminPanel({ creador }: Props) {
   const [mensaje, setMensaje] = useState('');
 
   const [proyectosPorUsuario, setProyectosPorUsuario] = useState<Record<number, Proyecto[]>>({});
+  const [usuarioEditandoRol, setUsuarioEditandoRol] = useState<number | null>(null);
+  const [nuevoRol, setNuevoRol] = useState<string>('');
+
+  const iniciarEdicionRol = (usuarioId: number, rolActual: string) => {
+  setUsuarioEditandoRol(usuarioId);
+  setNuevoRol(rolActual);
+};
+
+  const confirmarCambioRol = async (usuarioId: number) => {
+  try {
+    await actualizarRolUsuario(usuarioId, nuevoRol); // esta función la creamos luego
+    const actualizados = await obtenerUsuarios();
+    setUsuarios(actualizados);
+    setUsuarioEditandoRol(null);
+    setNuevoRol('');
+    setMensaje('Rol actualizado correctamente');
+  } catch {
+    setMensaje('Error al actualizar rol');
+  }
+};
 
 
   useEffect(() => {
@@ -137,6 +157,7 @@ export default function AdminPanel({ creador }: Props) {
               <th className="p-2 border">Rol</th>
               <th className="p-2 border">Proyectos</th>
               <th className="p-2 border">Administrador</th>
+              <th className="p-2 border">Editar rol</th>
             </tr>
           </thead>
           <tbody>
@@ -146,7 +167,18 @@ export default function AdminPanel({ creador }: Props) {
                 <td className="p-2 border">{u.usuario}</td>
                 <td className="p-2 border">{u.nombre}</td>
                 <td className="p-2 border">{u.apellido}</td>
-                <td className="p-2 border">{u.rol}</td>
+                <td className="p-2 border">
+                  {usuarioEditandoRol === u.id ? (
+                    <input
+                      type="text"
+                      value={nuevoRol}
+                      onChange={e => setNuevoRol(e.target.value)}
+                      className="border p-1 w-full"
+                    />
+                  ) : (
+                    u.rol
+                  )}
+                </td>
                 <td className="p-2 border">
                   <button
                     onClick={() => cargarProyectos(u.id)}
@@ -177,6 +209,23 @@ export default function AdminPanel({ creador }: Props) {
                   </div>
                 </td>
                 <td className="p-2 border">{u.administrador ? 'Sí' : 'No'}</td>
+                <td className="p-2 border">
+                  {usuarioEditandoRol === u.id ? (
+                    <button
+                      onClick={() => confirmarCambioRol(u.id)}
+                      className="text-green-600 hover:text-green-800"
+                    >
+                      ✅
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => iniciarEdicionRol(u.id, u.rol)}
+                      className="text-yellow-600 hover:text-yellow-800"
+                    >
+                      ✏️
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

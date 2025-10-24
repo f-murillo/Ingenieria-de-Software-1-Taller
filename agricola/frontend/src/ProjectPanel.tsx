@@ -125,6 +125,12 @@ export default function ProjectPanel({ usuario, mostrarToast }: Props) {
                 <th className="p-2 border">Inicio</th>
                 <th className="p-2 border">Cierre</th>
                 {usuario.administrador && <th className="p-2 border">Usuarios</th>}
+                <th className="p-2 border"></th>
+                <th className="p-2 border"></th>
+                <th className="p-2 border"></th>
+                <th className="p-2 border"></th>
+                <th className="p-2 border"></th>
+
               </tr>
             </thead>
             <tbody>
@@ -134,6 +140,7 @@ export default function ProjectPanel({ usuario, mostrarToast }: Props) {
                   <td className="p-2 border">{p.descripcion}</td>
                   <td className="p-2 border">{formatearFecha(p.fecha_inicio)}</td>
                   <td className="p-2 border">{formatearFecha(p.fecha_cierre)}</td>
+
                   {usuario.administrador && (
                     <td className="p-2 border">
                       <button
@@ -170,6 +177,21 @@ export default function ProjectPanel({ usuario, mostrarToast }: Props) {
                       )}
                     </td>
                   )}
+                  <td className="p-2 border">
+                    <button className="text-blue-600 hover:text-blue-800">📄</button>
+                  </td>
+                  <td className="p-2 border">
+                    <button className="text-yellow-600 hover:text-yellow-800">✏️</button>
+                  </td>
+                  <td className="p-2 border">
+                    <button className="text-red-600 hover:text-red-800">🚫</button>
+                  </td>
+                  <td className="p-2 border">
+                    <button className="text-green-600 hover:text-green-800">✔️</button>
+                  </td>
+                  <td className="p-2 border">
+                    <button className="text-gray-600 hover:text-gray-800">🖨️</button>
+                  </td>
                 </tr>
               ))}
             </tbody>

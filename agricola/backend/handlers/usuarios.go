@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"encoding/json"
-	"net/http"
-
 	"agricola/db"
 	"agricola/models"
+	"encoding/json"
+	"net/http"
+	"strconv"
 )
 
 func ObtenerUsuarios(w http.ResponseWriter, r *http.Request) {
@@ -99,4 +99,45 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(u)
+}
+
+func ActualizarRolUsuario(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPut {
+		http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extraer el ID desde la URL
+	idStr := r.URL.Path[len("/api/usuarios/"):]
+	idStr = idStr[:len(idStr)-len("/rol")] // elimina el sufijo "/rol"
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	// Leer el nuevo rol desde el cuerpo
+	var body struct {
+		NuevoRol string `json:"nuevoRol"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "JSON inválido", http.StatusBadRequest)
+		return
+	}
+	if body.NuevoRol == "" {
+		http.Error(w, "Rol vacío", http.StatusBadRequest)
+		return
+	}
+
+	// Actualizar en la base de datos
+	_, err = db.DB.Exec("UPDATE usuarios SET rol = ? WHERE id = ?", body.NuevoRol, id)
+	if err != nil {
+		http.Error(w, "Error al actualizar rol", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{"mensaje": "Rol actualizado correctamente"})
 }
