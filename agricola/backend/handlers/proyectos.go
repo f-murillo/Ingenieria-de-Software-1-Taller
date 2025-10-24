@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type UsuariosAsociacion struct {
@@ -204,4 +205,70 @@ func ObtenerProyectosPorUsuario(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(proyectos)
+}
+
+func ActualizarProyecto(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPut {
+		http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extraer ID desde la URL
+	path := strings.TrimPrefix(r.URL.Path, "/api/proyectos/")
+	idStr := strings.Split(path, "/")[0]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	// Decodificar cuerpo JSON
+	var datos struct {
+		Descripcion string `json:"descripcion"`
+		FechaInicio string `json:"fecha_inicio"`
+		FechaCierre string `json:"fecha_cierre"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&datos); err != nil {
+		http.Error(w, "Error al decodificar JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Validar formato de fechas
+	inicio, err := time.Parse("2006-01-02", datos.FechaInicio)
+	if err != nil {
+		http.Error(w, "Fecha de inicio inválida", http.StatusBadRequest)
+		return
+	}
+	cierre, err := time.Parse("2006-01-02", datos.FechaCierre)
+	if err != nil {
+		http.Error(w, "Fecha de cierre inválida", http.StatusBadRequest)
+		return
+	}
+	if cierre.Before(inicio) {
+		http.Error(w, "La fecha de cierre no puede ser anterior a la de inicio", http.StatusBadRequest)
+		return
+	}
+
+	// Ejecutar actualización
+	_, err = db.DB.Exec(`
+        UPDATE proyectos
+        SET descripcion = ?, fecha_inicio = ?, fecha_cierre = ?
+        WHERE id = ?
+    `, datos.Descripcion, datos.FechaInicio, datos.FechaCierre, id)
+	if err != nil {
+		http.Error(w, "Error al actualizar proyecto", http.StatusInternalServerError)
+		return
+	}
+
+	// Devolver proyecto actualizado
+	proyecto := models.Proyecto{
+		ID:          id,
+		Descripcion: datos.Descripcion,
+		FechaInicio: datos.FechaInicio,
+		FechaCierre: datos.FechaCierre,
+	}
+	json.NewEncoder(w).Encode(proyecto)
 }

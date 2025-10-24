@@ -6,6 +6,7 @@ import {
   obtenerUsuarios,
   crearProyecto,
   asociarUsuariosAProyecto,
+  actualizarProyecto,
   type Proyecto,
   type ProyectoSinID,
   type Usuario,
@@ -24,6 +25,24 @@ export default function ProjectPanel({ usuario, mostrarToast }: Props) {
   const [proyectoActivo, setProyectoActivo] = useState<number | null>(null);
   const [mensajeError, setMensajeError] = useState('');
   const [cargando, setCargando] = useState(true);
+
+  const [proyectoEditando, setProyectoEditando] = useState<number | null>(null);
+  const [datosEditados, setDatosEditados] = useState({
+  descripcion: '',
+  fecha_inicio: '',
+  fecha_cierre: '',
+  });
+
+  const iniciarEdicionProyecto = (p: Proyecto) => {
+  setProyectoEditando(p.id);
+  setDatosEditados({
+    descripcion: p.descripcion,
+    fecha_inicio: p.fecha_inicio,
+    fecha_cierre: p.fecha_cierre,
+  });
+  };
+
+
 
   useEffect(() => {
     cargarProyectos();
@@ -97,6 +116,18 @@ export default function ProjectPanel({ usuario, mostrarToast }: Props) {
     }
   };
 
+  const confirmarEdicionProyecto = async (id: number) => {
+  try {
+    await actualizarProyecto(id, datosEditados); // esta función la creamos luego
+    const actualizados = await obtenerProyectos();
+    setProyectos(actualizados);
+    setProyectoEditando(null);
+    setDatosEditados({ descripcion: '', fecha_inicio: '', fecha_cierre: '' });
+  } catch {
+    alert('Error al actualizar el proyecto');
+  }
+};
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold text-gray-800">
@@ -137,15 +168,53 @@ export default function ProjectPanel({ usuario, mostrarToast }: Props) {
               {proyectos.map(p => (
                 <tr key={p.id} className="border-t">
                   <td className="p-2 border">{p.id}</td>
-                  <td className="p-2 border">{p.descripcion}</td>
-                  <td className="p-2 border">{formatearFecha(p.fecha_inicio)}</td>
-                  <td className="p-2 border">{formatearFecha(p.fecha_cierre)}</td>
+
+                  {proyectoEditando === p.id ? (
+                    <>
+                      <td className="p-2 border">
+                      <input
+                          type="text"
+                          value={datosEditados.descripcion}
+                          onChange={e =>
+                          setDatosEditados({ ...datosEditados, descripcion: e.target.value })
+                        }
+                        className="border p-1 w-full"
+                      />
+                      </td>
+                      <td className="p-2 border">
+                        <input
+                          type="date"
+                          value={datosEditados.fecha_inicio}
+                          onChange={e =>
+                            setDatosEditados({ ...datosEditados, fecha_inicio: e.target.value })
+                          }
+                          className="border p-1 w-full"
+                        />
+                      </td>
+                      <td className="p-2 border">
+                        <input
+                          type="date"
+                          value={datosEditados.fecha_cierre}
+                          onChange={e =>
+                            setDatosEditados({ ...datosEditados, fecha_cierre: e.target.value })
+                          }
+                          className="border p-1 w-full"
+                        />
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td className="p-2 border">{p.descripcion}</td>
+                      <td className="p-2 border">{formatearFecha(p.fecha_inicio)}</td>
+                      <td className="p-2 border">{formatearFecha(p.fecha_cierre)}</td>
+                    </>
+                  )}
 
                   {usuario.administrador && (
                     <td className="p-2 border">
                       <button
                         onClick={() => cargarUsuarios(p.id)}
-                        className="text-blue-600 underline"
+                          className="text-blue-600 underline"
                       >
                         Ver usuarios
                       </button>
@@ -177,11 +246,26 @@ export default function ProjectPanel({ usuario, mostrarToast }: Props) {
                       )}
                     </td>
                   )}
+
                   <td className="p-2 border">
-                    <button className="text-blue-600 hover:text-blue-800">📄</button>
+                    {proyectoEditando === p.id ? (
+                    <button
+                      onClick={() => confirmarEdicionProyecto(p.id)}
+                        className="text-green-600 hover:text-green-800"
+                      >
+                        ✅
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => iniciarEdicionProyecto(p)}
+                        className="text-yellow-600 hover:text-yellow-800"
+                      >
+                        ✏️
+                      </button>
+                    )}
                   </td>
                   <td className="p-2 border">
-                    <button className="text-yellow-600 hover:text-yellow-800">✏️</button>
+                    <button className="text-blue-600 hover:text-blue-800">📄</button>
                   </td>
                   <td className="p-2 border">
                     <button className="text-red-600 hover:text-red-800">🚫</button>

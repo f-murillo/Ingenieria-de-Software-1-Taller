@@ -69,6 +69,8 @@ export async function crearProyecto(proyecto: ProyectoSinID): Promise<Proyecto> 
   return res.json();
 }
 
+
+
 export async function actualizarProyecto(id: number, proyecto: ProyectoSinID): Promise<Proyecto> {
   const res = await fetch(`${API_URL}/api/proyectos/${id}`, {
     method: 'PUT',

@@ -96,6 +96,10 @@ func main() {
 				return
 			}
 		}
+		if r.Method == http.MethodPut {
+			handlers.ActualizarProyecto(w, r)
+			return
+		}
 
 		http.Error(w, "Ruta o método no válido", http.StatusNotFound)
 	})
