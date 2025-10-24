@@ -1,29 +1,31 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"agricola/db"
 	"agricola/handlers"
+	"log"
+	"net/http"
+	"strings"
 )
+
+// Funcion para habilitar CORS
+func habilitarCORS(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+}
 
 func main() {
 	db.Inicializar()
 
 	http.HandleFunc("/api/usuarios", func(w http.ResponseWriter, r *http.Request) {
-		// Permitir solicitudes desde otros orígenes (como React)
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		habilitarCORS(w)
 
-		// Si el navegador envía una solicitud OPTIONS (preflight), respondemos sin procesar
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
 
-		// Procesar solicitudes reales
 		switch r.Method {
 		case http.MethodGet:
 			handlers.ObtenerUsuarios(w, r)
@@ -34,10 +36,67 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/api/usuarios/", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method == http.MethodGet && strings.HasSuffix(r.URL.Path, "/proyectos") {
+			handlers.ObtenerProyectosPorUsuario(w, r)
+			return
+		}
+
+		http.Error(w, "Ruta o método no válido", http.StatusNotFound)
+	})
+
+	http.HandleFunc("/api/proyectos", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			handlers.ObtenerProyectos(w, r)
+		case http.MethodPost:
+			handlers.CrearProyecto(w, r)
+		default:
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/api/proyectos/", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if strings.HasSuffix(r.URL.Path, "/usuarios") {
+			switch r.Method {
+			case http.MethodGet:
+				handlers.ObtenerUsuariosPorProyecto(w, r)
+				return
+			case http.MethodPost:
+				handlers.AsociarUsuariosAProyecto(w, r)
+				return
+			default:
+				http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+				return
+			}
+		}
+
+		http.Error(w, "Ruta o método no válido", http.StatusNotFound)
+	})
+
 	http.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		habilitarCORS(w)
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)

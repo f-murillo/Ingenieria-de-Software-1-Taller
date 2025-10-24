@@ -1,9 +1,8 @@
-// App.tsx
-
 import { useState, useEffect } from 'react';
 import LoginForm from './LoginForm';
 import AdminPanel from './AdminPanel';
 import Panel from './Panel';
+import ProjectPanel from './ProjectPanel';
 import type { Usuario } from './api';
 
 function App() {
@@ -18,13 +17,17 @@ function App() {
     setUsuarioAutenticado(null);
     setVista('bienvenida');
 
-    // Oculta el mensaje automáticamente después de 3 segundos
     setTimeout(() => {
       setMostrarMensaje(false);
     }, 3000);
   };
 
-  // Limpia el mensaje al iniciar sesión
+  const mostrarToast = (texto: string) => {
+    setMensaje(texto);
+    setMostrarMensaje(true);
+    setTimeout(() => setMostrarMensaje(false), 3000);
+  };
+
   useEffect(() => {
     if (usuarioAutenticado) {
       setMensaje('');
@@ -45,12 +48,12 @@ function App() {
       return <AdminPanel creador={usuarioAutenticado.usuario} />;
     }
 
-    if (vista === 'proyectos') {
-      return <p>Gestión de proyectos (pendiente)</p>;
+    if (vista === 'proyectos' && usuarioAutenticado?.administrador) {
+      return <ProjectPanel usuario={usuarioAutenticado} mostrarToast={mostrarToast} />;
     }
 
-    if (vista === 'ver-proyectos') {
-      return <p>Visualización de proyectos (pendiente)</p>;
+    if (vista === 'ver-proyectos' && !usuarioAutenticado?.administrador && usuarioAutenticado !== null) {
+      return <ProjectPanel usuario={usuarioAutenticado} mostrarToast={mostrarToast} />;
     }
 
     return <p>Vista no disponible</p>;
@@ -68,13 +71,27 @@ function App() {
           )}
         </div>
       ) : (
-        <div className="min-h-screen flex bg-gray-100">
+        <div className="min-h-screen flex bg-gray-100 relative">
           <Panel
             administrador={!!usuarioAutenticado?.administrador}
             onSeleccion={setVista}
             onLogout={handleLogout}
           />
-          <main className="flex-1 p-8">{renderContenido()}</main>
+          <main className="flex-1 p-8">
+            {(() => {
+              try {
+                return renderContenido();
+              } catch (error) {
+                console.error('Error en renderContenido:', error);
+                return <p className="text-red-600">Ocurrió un error inesperado al cargar la vista.</p>;
+              }
+            })()}
+          </main>
+          {mostrarMensaje && (
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow-md animate-fade-in">
+              {mensaje}
+            </div>
+          )}
         </div>
       )}
     </>
