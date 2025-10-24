@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { crearUsuario, obtenerUsuarios, type Usuario } from './api';
+import { obtenerProyectosPorUsuario, type Proyecto } from './api';
 
 interface Props {
   creador: string;
@@ -19,6 +20,9 @@ export default function AdminPanel({ creador }: Props) {
     administrador: false,
   });
   const [mensaje, setMensaje] = useState('');
+
+  const [proyectosPorUsuario, setProyectosPorUsuario] = useState<Record<number, Proyecto[]>>({});
+
 
   useEffect(() => {
     obtenerUsuarios()
@@ -44,6 +48,16 @@ export default function AdminPanel({ creador }: Props) {
       setUsuarios(actualizados);
     } catch {
       setMensaje('Error al crear usuario');
+    }
+  };
+
+    const cargarProyectos = async (usuarioId: number) => {
+    try {
+      const proyectos = await obtenerProyectosPorUsuario(usuarioId);
+      setProyectosPorUsuario(prev => ({ ...prev, [usuarioId]: proyectos }));
+    } catch (error) {
+      console.error('Error al cargar proyectos del usuario:', error);
+      setMensaje('Error al cargar proyectos del usuario');
     }
   };
 
@@ -121,7 +135,7 @@ export default function AdminPanel({ creador }: Props) {
               <th className="p-2 border">Nombre</th>
               <th className="p-2 border">Apellido</th>
               <th className="p-2 border">Rol</th>
-              <th className="p-2 border">Proyecto</th>
+              <th className="p-2 border">Proyectos</th>
               <th className="p-2 border">Administrador</th>
             </tr>
           </thead>
@@ -133,7 +147,35 @@ export default function AdminPanel({ creador }: Props) {
                 <td className="p-2 border">{u.nombre}</td>
                 <td className="p-2 border">{u.apellido}</td>
                 <td className="p-2 border">{u.rol}</td>
-                <td className="p-2 border">{u.proyecto}</td>
+                <td className="p-2 border">
+                  <button
+                    onClick={() => cargarProyectos(u.id)}
+                    className="text-blue-600 underline"
+                  >
+                    Ver proyectos
+                  </button>
+
+                  {/* Espacio reservado para mostrar proyectos más adelante */}
+                  <div className="mt-2 text-sm text-gray-700 italic">
+                    <div className="mt-2 text-sm text-gray-700">
+                      {proyectosPorUsuario[u.id] ? (
+                        proyectosPorUsuario[u.id].length === 0 ? (
+                          <p className="italic text-gray-500">No tiene proyectos asignados.</p>
+                        ) : (
+                          <ul className="list-disc pl-4">
+                            {proyectosPorUsuario[u.id].map(p => (
+                              <li key={p.id}>
+                                {p.descripcion} ({p.fecha_inicio} → {p.fecha_cierre})
+                              </li>
+                            ))}
+                          </ul>
+                        )
+                      ) : (
+                        <p className="italic text-gray-500">(Aquí se mostrarán los proyectos del usuario)</p>
+                      )}
+                    </div>
+                  </div>
+                </td>
                 <td className="p-2 border">{u.administrador ? 'Sí' : 'No'}</td>
               </tr>
             ))}
