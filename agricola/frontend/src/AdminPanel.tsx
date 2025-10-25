@@ -1,8 +1,6 @@
-// AdminPanel.tsx
-
 import { useEffect, useState } from 'react';
 import { crearUsuario, obtenerUsuarios, type Usuario } from './api';
-import { obtenerProyectosPorUsuario,actualizarRolUsuario, type Proyecto } from './api';
+import { obtenerProyectosPorUsuario, actualizarRolUsuario, type Proyecto } from './api';
 
 interface Props {
   creador: string;
@@ -16,7 +14,6 @@ export default function AdminPanel({ creador }: Props) {
     nombre: '',
     apellido: '',
     rol: '',
-    proyecto: '',
     administrador: false,
   });
   const [mensaje, setMensaje] = useState('');
@@ -26,23 +23,22 @@ export default function AdminPanel({ creador }: Props) {
   const [nuevoRol, setNuevoRol] = useState<string>('');
 
   const iniciarEdicionRol = (usuarioId: number, rolActual: string) => {
-  setUsuarioEditandoRol(usuarioId);
-  setNuevoRol(rolActual);
-};
+    setUsuarioEditandoRol(usuarioId);
+    setNuevoRol(rolActual);
+  };
 
   const confirmarCambioRol = async (usuarioId: number) => {
-  try {
-    await actualizarRolUsuario(usuarioId, nuevoRol); // esta función la creamos luego
-    const actualizados = await obtenerUsuarios();
-    setUsuarios(actualizados);
-    setUsuarioEditandoRol(null);
-    setNuevoRol('');
-    setMensaje('Rol actualizado correctamente');
-  } catch {
-    setMensaje('Error al actualizar rol');
-  }
-};
-
+    try {
+      await actualizarRolUsuario(usuarioId, nuevoRol);
+      const actualizados = await obtenerUsuarios();
+      setUsuarios(actualizados);
+      setUsuarioEditandoRol(null);
+      setNuevoRol('');
+      setMensaje('Rol actualizado correctamente');
+    } catch {
+      setMensaje('Error al actualizar rol');
+    }
+  };
 
   useEffect(() => {
     obtenerUsuarios()
@@ -61,7 +57,6 @@ export default function AdminPanel({ creador }: Props) {
         nombre: '',
         apellido: '',
         rol: '',
-        proyecto: '',
         administrador: false,
       });
       const actualizados = await obtenerUsuarios();
@@ -71,7 +66,7 @@ export default function AdminPanel({ creador }: Props) {
     }
   };
 
-    const cargarProyectos = async (usuarioId: number) => {
+  const cargarProyectos = async (usuarioId: number) => {
     try {
       const proyectos = await obtenerProyectosPorUsuario(usuarioId);
       setProyectosPorUsuario(prev => ({ ...prev, [usuarioId]: proyectos }));
@@ -123,13 +118,6 @@ export default function AdminPanel({ creador }: Props) {
           placeholder="Rol"
           value={nuevoUsuario.rol}
           onChange={e => setNuevoUsuario({ ...nuevoUsuario, rol: e.target.value })}
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          placeholder="Proyecto"
-          value={nuevoUsuario.proyecto}
-          onChange={e => setNuevoUsuario({ ...nuevoUsuario, proyecto: e.target.value })}
           className="border p-2 w-full"
         />
         <label className="flex items-center space-x-2">
@@ -186,26 +174,22 @@ export default function AdminPanel({ creador }: Props) {
                   >
                     Ver proyectos
                   </button>
-
-                  {/* Espacio reservado para mostrar proyectos más adelante */}
                   <div className="mt-2 text-sm text-gray-700 italic">
-                    <div className="mt-2 text-sm text-gray-700">
-                      {proyectosPorUsuario[u.id] ? (
-                        proyectosPorUsuario[u.id].length === 0 ? (
-                          <p className="italic text-gray-500">No tiene proyectos asignados.</p>
-                        ) : (
-                          <ul className="list-disc pl-4">
-                            {proyectosPorUsuario[u.id].map(p => (
-                              <li key={p.id}>
-                                {p.descripcion} ({p.fecha_inicio} → {p.fecha_cierre})
-                              </li>
-                            ))}
-                          </ul>
-                        )
+                    {proyectosPorUsuario[u.id] ? (
+                      proyectosPorUsuario[u.id].length === 0 ? (
+                        <p className="italic text-gray-500">No tiene proyectos asignados.</p>
                       ) : (
-                        <p className="italic text-gray-500">(Aquí se mostrarán los proyectos del usuario)</p>
-                      )}
-                    </div>
+                        <ul className="list-disc pl-4">
+                          {proyectosPorUsuario[u.id].map(p => (
+                            <li key={p.id}>
+                              {p.descripcion} ({p.fecha_inicio} → {p.fecha_cierre})
+                            </li>
+                          ))}
+                        </ul>
+                      )
+                    ) : (
+                      <p className="italic text-gray-500">(Aquí se mostrarán los proyectos del usuario)</p>
+                    )}
                   </div>
                 </td>
                 <td className="p-2 border">{u.administrador ? 'Sí' : 'No'}</td>

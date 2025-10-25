@@ -186,7 +186,9 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
             <tbody>
               {proyectos.map(p => (
                 <tr key={p.id} className="border-t">
-                  <td className="p-2 border">{p.id}</td>
+                  <td className={`p-2 border ${p.habilitado ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'}`}>
+                    {p.id}
+                  </td>
 
                   {proyectoEditando === p.id ? (
                     <>
@@ -223,9 +225,9 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                     </>
                   ) : (
                     <>
-                      <td className="p-2 border">{p.descripcion}</td>
-                      <td className="p-2 border">{formatearFecha(p.fecha_inicio)}</td>
-                      <td className="p-2 border">{formatearFecha(p.fecha_cierre)}</td>
+                      <td className={`p-2 border ${p.habilitado ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'}`}>{p.descripcion}</td>
+                      <td className={`p-2 border ${p.habilitado ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'}`}>{formatearFecha(p.fecha_inicio)}</td>
+                      <td className={`p-2 border ${p.habilitado ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'}`}>{formatearFecha(p.fecha_cierre)}</td>
                     </>
                   )}
 
