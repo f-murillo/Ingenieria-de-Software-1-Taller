@@ -164,6 +164,7 @@ export default function AdminPanel({ creador }: Props) {
                 <td className="p-2 border">
                   {usuarioEditandoRol === u.id ? (
                     <input
+                      data-testid={`input-nuevo-rol-${u.id}`}
                       type="text"
                       value={nuevoRol}
                       onChange={e => setNuevoRol(e.target.value)}
@@ -175,6 +176,7 @@ export default function AdminPanel({ creador }: Props) {
                 </td>
                 <td className="p-2 border">
                   <button
+                    data-testid={`btn-ver-proyectos-${u.id}`}
                     onClick={() => cargarProyectos(u.id)}
                     className="text-blue-600 underline"
                   >
@@ -202,6 +204,7 @@ export default function AdminPanel({ creador }: Props) {
                 <td className="p-2 border">
                   {usuarioEditandoRol === u.id ? (
                     <button
+                      data-testid={`btn-confirmar-rol-${u.id}`}
                       onClick={() => confirmarCambioRol(u.id)}
                       className="text-green-600 hover:text-green-800"
                     >
@@ -209,6 +212,7 @@ export default function AdminPanel({ creador }: Props) {
                     </button>
                   ) : (
                     <button
+                      data-testid={`btn-editar-rol-${u.id}`}
                       onClick={() => iniciarEdicionRol(u.id, u.rol)}
                       className="text-yellow-600 hover:text-yellow-800"
                     >

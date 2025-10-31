@@ -194,6 +194,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                     <>
                       <td className="p-2 border">
                       <input
+                          data-testid={`input-descripcion-${p.id}`}
                           type="text"
                           value={datosEditados.descripcion}
                           onChange={e =>
@@ -204,6 +205,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                       </td>
                       <td className="p-2 border">
                         <input
+                          data-testid={`input-fecha-inicio-${p.id}`}
                           type="date"
                           value={datosEditados.fecha_inicio}
                           onChange={e =>
@@ -214,6 +216,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                       </td>
                       <td className="p-2 border">
                         <input
+                          data-testid={`input-fecha-cierre-${p.id}`}
                           type="date"
                           value={datosEditados.fecha_cierre}
                           onChange={e =>
@@ -273,6 +276,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                     {p.habilitado ? (
                       proyectoEditando === p.id ? (
                         <button
+                          data-testid={`btn-confirmar-${p.id}`}
                           onClick={() => confirmarEdicionProyecto(p.id)}
                           className="text-green-600 hover:text-green-800"
                         >
@@ -280,6 +284,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                         </button>
                       ) : (
                         <button
+                          data-testid={`btn-editar-${p.id}`}
                           onClick={() => iniciarEdicionProyecto(p)}
                           className="text-yellow-600 hover:text-yellow-800"
                         >

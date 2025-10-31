@@ -17,6 +17,15 @@ describe('Test de login', () => {
     cy.wait(2000)
   })
 
+    it('Realiza un login de usuario', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('lrojas')
+    cy.get('[data-testid="input-contraseña"]').type('pass456')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.contains('Bienvenido,').should('be.visible')
+    cy.wait(2000)
+  })
+
   it('Realiza un login fallido', () => {
     cy.visit('http://localhost:5173/')
     cy.get('[data-testid="input-usuario"]').type('usuario_incorrecto')
@@ -45,6 +54,22 @@ describe('Usuarios', () => {
     // Verificar que el usuario fue agregado (esto depende de la implementación, ajustar según sea necesario)
     cy.contains('Usuario creado exitosamente').should('be.visible')
   })
+
+
+  it('Botones Funcionales', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-usuarios"]').click()
+    cy.get('[data-testid="btn-editar-rol-1"]').click()
+    cy.get('[data-testid="input-nuevo-rol-1"]').clear().type('Operador')
+    cy.get('[data-testid="btn-confirmar-rol-1"]').click()
+    cy.contains('Operador').should('be.visible')
+    cy.get('[data-testid="btn-ver-proyectos-1"]').click()
+
+  })
+
 })
 
 describe('Proyectos', () => {
@@ -78,12 +103,20 @@ describe('Proyectos', () => {
 //    cy.get('button[type="submit"]').click()
 //    cy.contains('Usuarios asociados correctamente').should('be.visible')
     cy.get('[data-testid="btn-detalles-proyecto-1"]').click()
-    
     cy.get('[data-testid="btn-eliminar-proyecto-1"]').click()
-    
     cy.get('[data-testid="btn-activar-proyecto-1"]').click()
- 
     cy.get('[data-testid="btn-imprimir-proyecto-1"]').click()
+    cy.get('[data-testid="btn-editar-1"]').click()
+    cy.get('[data-testid="input-descripcion-1"]').clear().type('Nuevo nombre del proyecto')
+    // Editar fecha de inicio
+    cy.get('[data-testid="input-fecha-inicio-1"]').clear().type('2024-07-01')
+    // Editar fecha de cierre
+    cy.get('[data-testid="input-fecha-cierre-1"]').clear().type('2024-08-01')
+    cy.get('[data-testid="btn-confirmar-1"]').click()
+    cy.contains('Nuevo nombre del proyecto').should('be.visible')
+
   })
+
+
 
 })
