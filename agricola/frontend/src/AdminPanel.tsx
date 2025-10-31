@@ -84,6 +84,7 @@ export default function AdminPanel({ creador }: Props) {
 
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 rounded shadow">
         <input
+          data-testid="input-nuevo-usuario"
           type="text"
           placeholder="Usuario"
           value={nuevoUsuario.usuario}
@@ -92,6 +93,7 @@ export default function AdminPanel({ creador }: Props) {
           required
         />
         <input
+          data-testid="input-nueva-contrasena"
           type="password"
           placeholder="Contraseña"
           value={nuevoUsuario.contraseña}
@@ -100,6 +102,7 @@ export default function AdminPanel({ creador }: Props) {
           required
         />
         <input
+          data-testid="input-nuevo-nombre"
           type="text"
           placeholder="Nombre"
           value={nuevoUsuario.nombre}
@@ -107,6 +110,7 @@ export default function AdminPanel({ creador }: Props) {
           className="border p-2 w-full"
         />
         <input
+          data-testid="input-nuevo-apellido"
           type="text"
           placeholder="Apellido"
           value={nuevoUsuario.apellido}
@@ -114,6 +118,7 @@ export default function AdminPanel({ creador }: Props) {
           className="border p-2 w-full"
         />
         <input
+          data-testid="input-nuevo-rol"
           type="text"
           placeholder="Rol"
           value={nuevoUsuario.rol}
@@ -122,6 +127,7 @@ export default function AdminPanel({ creador }: Props) {
         />
         <label className="flex items-center space-x-2">
           <input
+            data-testid="input-nuevo-administrador"
             type="checkbox"
             checked={nuevoUsuario.administrador}
             onChange={e => setNuevoUsuario({ ...nuevoUsuario, administrador: e.target.checked })}

@@ -234,12 +234,14 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                   {usuario.administrador && (
                     <td className="p-2 border">
                       <button
+                        data-testid={`btn-ver-usuarios-${p.id}`}
                         onClick={() => cargarUsuarios(p.id)}
                           className="text-blue-600 underline"
                       >
                         Ver usuarios
                       </button>
                       <button
+                        data-testid={`btn-asignar-usuarios-${p.id}`}
                         onClick={() => {
                           setProyectoActivo(p.id);
                           cargarUsuariosDisponibles();
@@ -289,20 +291,28 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                     )}
                   </td>
                   <td className="p-2 border">
-                    <button className="text-blue-600 hover:text-blue-800">📄</button>
+                    <button 
+                      data-testid={`btn-detalles-proyecto-${p.id}`}
+                    className="text-blue-600 hover:text-blue-800">📄</button>
                   </td>
                   <td className="p-2 border">
-                    <button onClick={() => cambiarEstadoProyecto(p.id, false)}
+                    <button
+                      data-testid={`btn-eliminar-proyecto-${p.id}`}
+                    onClick={() => cambiarEstadoProyecto(p.id, false)}
                       className="text-red-600 hover:text-red-800"
                     >🚫</button>
                   </td>
                   <td className="p-2 border">
-                    <button onClick={() => cambiarEstadoProyecto(p.id, true)}
+                    <button 
+                      data-testid={`btn-activar-proyecto-${p.id}`}
+                    onClick={() => cambiarEstadoProyecto(p.id, true)}
                       className="text-green-600 hover:text-green-800"
                     >✔️</button>
                   </td>
                   <td className="p-2 border">
-                    <button className="text-gray-600 hover:text-gray-800">🖨️</button>
+                    <button 
+                      data-testid={`btn-imprimir-proyecto-${p.id}`}
+                    className="text-gray-600 hover:text-gray-800">🖨️</button>
                   </td>
                 </tr>
               ))}
@@ -321,6 +331,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
           </h3>
 
           <select
+            data-testid="select-usuarios-disponibles"
             multiple
             value={usuariosSeleccionados.map(String)}
             onChange={e =>
@@ -391,6 +402,7 @@ function FormularioProyecto({ onCrear }: { onCrear: (p: ProyectoSinID) => void }
     <div className="space-y-4">
       {!mostrarFormulario ? (
         <button
+          data-testid="boton-agregar-proyecto"
           onClick={() => setMostrarFormulario(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded"
         >
@@ -405,6 +417,7 @@ function FormularioProyecto({ onCrear }: { onCrear: (p: ProyectoSinID) => void }
               Descripción del proyecto
             </label>
             <input
+              data-testid="input-nueva-descripcion"
               type="text"
               placeholder="Descripción"
               value={descripcion}
@@ -419,6 +432,7 @@ function FormularioProyecto({ onCrear }: { onCrear: (p: ProyectoSinID) => void }
               Fecha de inicio del proyecto
             </label>
             <input
+              data-testid="input-nueva-fecha-inicio"
               type="date"
               value={inicio}
               onChange={e => setInicio(e.target.value)}
@@ -432,6 +446,7 @@ function FormularioProyecto({ onCrear }: { onCrear: (p: ProyectoSinID) => void }
               Fecha de cierre del proyecto
             </label>
             <input
+              data-testid="input-nueva-fecha-cierre"
               type="date"
               value={cierre}
               onChange={e => setCierre(e.target.value)}

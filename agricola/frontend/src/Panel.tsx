@@ -18,10 +18,14 @@ export default function Panel({ administrador, onSeleccion, onLogout, mensaje }:
 
       {administrador ? (
         <>
-          <button onClick={() => onSeleccion('usuarios')} className="block w-full text-left hover:underline hover:cursor-pointer">
+          <button 
+           data-testid="btn-usuarios" 
+           onClick={() => onSeleccion('usuarios')} className="block w-full text-left hover:underline hover:cursor-pointer">
             Gestionar usuarios
           </button>
-          <button onClick={() => onSeleccion('proyectos')} className="block w-full text-left hover:underline hover:cursor-pointer">
+          <button 
+           data-testid="btn-proyectos" 
+           onClick={() => onSeleccion('proyectos')} className="block w-full text-left hover:underline hover:cursor-pointer">
             Gestionar proyectos
           </button>
         </>
