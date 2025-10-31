@@ -283,7 +283,7 @@ func ActualizarProyecto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Ejecutar actualización
+	// Ejecutar actualizacion
 	_, err = db.DB.Exec(`
         UPDATE proyectos
         SET descripcion = ?, fecha_inicio = ?, fecha_cierre = ?
