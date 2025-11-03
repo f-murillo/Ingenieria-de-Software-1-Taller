@@ -20,8 +20,26 @@ export interface Proyecto {
   fecha_cierre: string;
   habilitado: boolean;
 }
+export interface ActividadPorProyecto {
+  id: number;
+  proyecto: string;
+  actividad: string;
+  implemento: string;
+  usuario: string;
+  recurso_humano: string;
+}
+
+
 
 export type ProyectoSinID = Omit<Proyecto, 'id'>;
+
+//Actividades
+export async function obtenerActividades(): Promise<ActividadPorProyecto[]> {
+  const res = await fetch(`${API_URL}/api/actividades`);
+  if (!res.ok) throw new Error('Error al obtener actividades');
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
 
 // Login
 export async function login(usuario: string, contraseña: string): Promise<Usuario> {

@@ -125,6 +125,21 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/api/actividades", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method == http.MethodGet {
+			handlers.ObtenerActividades(w, r)
+		} else {
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
+	})
+
 	log.Println("Servidor escuchando en http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

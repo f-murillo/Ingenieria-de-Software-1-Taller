@@ -3,7 +3,10 @@ import LoginForm from './LoginForm';
 import AdminPanel from './AdminPanel';
 import Panel from './Panel';
 import ProjectPanel from './ProjectPanel';
+import VistaActividades from './VistaActividades';
 import type { Usuario } from './api';
+
+
 
 function App() {
   const [usuarioAutenticado, setUsuarioAutenticado] = useState<Usuario | null>(null);
@@ -55,6 +58,11 @@ function App() {
     if (vista === 'ver-proyectos' && !usuarioAutenticado?.administrador && usuarioAutenticado !== null) {
       return <ProjectPanel usuario={usuarioAutenticado} mostrarToast={mostrarToast} />;
     }
+
+    if (vista === 'actividades' && usuarioAutenticado?.administrador) {
+    return <VistaActividades usuario={usuarioAutenticado} mostrarToast={mostrarToast} />;
+    }
+
 
     return <p>Vista no disponible</p>;
   };
