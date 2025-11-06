@@ -12,7 +12,7 @@ func ObtenerUsuarios(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
-	rows, err := db.DB.Query("SELECT id, usuario, nombre, apellido, rol, proyecto, administrador FROM usuarios")
+	rows, err := db.DB.Query("SELECT id, usuario, cedula, nombre, apellido, rol, proyecto, administrador FROM usuarios")
 	if err != nil {
 		http.Error(w, "Error al consultar usuarios", http.StatusInternalServerError)
 		return
@@ -22,7 +22,7 @@ func ObtenerUsuarios(w http.ResponseWriter, r *http.Request) {
 	var usuarios []models.Usuario
 	for rows.Next() {
 		var u models.Usuario
-		if err := rows.Scan(&u.ID, &u.Usuario, &u.Nombre, &u.Apellido, &u.Rol, &u.Proyecto, &u.Administrador); err != nil {
+		if err := rows.Scan(&u.ID, &u.Usuario, &u.Cedula, &u.Nombre, &u.Apellido, &u.Rol, &u.Proyecto, &u.Administrador); err != nil {
 			http.Error(w, "Error al leer datos", http.StatusInternalServerError)
 			return
 		}
@@ -53,14 +53,14 @@ func CrearUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stmt, err := db.DB.Prepare("INSERT INTO usuarios (usuario, nombre, apellido, rol, proyecto, contraseña, administrador) VALUES (?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.DB.Prepare("INSERT INTO usuarios (usuario, cedula, nombre, apellido, rol, proyecto, contraseña, administrador) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		http.Error(w, "Error al preparar consulta", http.StatusInternalServerError)
 		return
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(u.Usuario, u.Nombre, u.Apellido, u.Rol, u.Proyecto, u.Contraseña, u.Administrador)
+	result, err := stmt.Exec(u.Usuario, u.Cedula, u.Nombre, u.Apellido, u.Rol, u.Proyecto, u.Contraseña, u.Administrador)
 	if err != nil {
 		http.Error(w, "Error al insertar usuario", http.StatusInternalServerError)
 		return

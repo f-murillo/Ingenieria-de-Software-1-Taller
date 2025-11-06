@@ -171,6 +171,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
             <thead>
               <tr className="bg-gray-200 text-left">
                 <th className="p-2 border">ID</th>
+                <th className="p-2 border">Costo total</th>
                 <th className="p-2 border">Descripción</th>
                 <th className="p-2 border">Inicio</th>
                 <th className="p-2 border">Cierre</th>
@@ -231,6 +232,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                       <td className={`p-2 border ${p.habilitado ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'}`}>{p.descripcion}</td>
                       <td className={`p-2 border ${p.habilitado ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'}`}>{formatearFecha(p.fecha_inicio)}</td>
                       <td className={`p-2 border ${p.habilitado ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'}`}>{formatearFecha(p.fecha_cierre)}</td>
+                      <td className={`p-2 border ${p.habilitado ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'}`}>Bs{p.costo}</td>
                     </>
                   )}
 
@@ -458,7 +460,7 @@ function FormularioProyecto({ onCrear }: { onCrear: (p: ProyectoSinID) => void }
               className="w-full p-2 border rounded"
             />
           </div>
-
+         
           <div className="flex gap-4">
             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:cursor-pointer">
               Crear proyecto

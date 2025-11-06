@@ -4,6 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 export interface Usuario {
   id: number;
   usuario: string;
+  cedula: string;
   nombre?: string;
   apellido?: string;
   rol?: string;
@@ -19,6 +20,7 @@ export interface Proyecto {
   fecha_inicio: string;
   fecha_cierre: string;
   habilitado: boolean;
+  costo?: number;
 }
 
 export interface ProyectoSinID extends Omit<Proyecto, 'id'> {}

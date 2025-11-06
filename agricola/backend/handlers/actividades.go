@@ -99,6 +99,8 @@ func CrearActividad(w http.ResponseWriter, r *http.Request) {
 	}
 	defer stmt.Close()
 
+	ActualizarCostoProyecto(act.ProyectoID)
+
 	result, err := stmt.Exec(act.ProyectoID, act.ActividadID, act.ImplementoID, act.UsuarioID, act.RecursoHumano, act.Observaciones, act.Costo)
 	if err != nil {
 		http.Error(w, "Error al insertar actividad", http.StatusInternalServerError)
@@ -155,7 +157,9 @@ func ActualizarActividad(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error al actualizar actividad", http.StatusInternalServerError)
 		return
 	}
+	ActualizarCostoProyecto(act.ProyectoID)
 	act.ID = id
+
 	json.NewEncoder(w).Encode(act)
 }
 
@@ -172,11 +176,20 @@ func EliminarActividad(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var proyectoID int
+	err = db.DB.QueryRow("SELECT proyecto_id FROM actividades_por_proyecto WHERE id = ?", id).Scan(&proyectoID)
+	if err != nil {
+		http.Error(w, "Error al obtener proyecto de la actividad", http.StatusInternalServerError)
+		return
+	}
+
 	_, err = db.DB.Exec("DELETE FROM actividades_por_proyecto WHERE id = ?", id)
 	if err != nil {
 		http.Error(w, "Error al eliminar actividad", http.StatusInternalServerError)
 		return
 	}
+
+	ActualizarCostoProyecto(proyectoID)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"mensaje": "Actividad eliminada correctamente"})

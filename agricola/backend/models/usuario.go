@@ -3,6 +3,7 @@ package models
 type Usuario struct {
 	ID            int    `json:"id"`
 	Usuario       string `json:"usuario"`
+	Cedula        string `json:"cedula"`
 	Nombre        string `json:"nombre"`
 	Apellido      string `json:"apellido"`
 	Rol           string `json:"rol"`

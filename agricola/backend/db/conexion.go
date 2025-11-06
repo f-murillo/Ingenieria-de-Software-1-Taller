@@ -21,6 +21,7 @@ func Inicializar() {
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             usuario TEXT,
+			cedula TEXT,
             nombre TEXT,
             apellido TEXT,
             rol TEXT,
@@ -40,6 +41,7 @@ func Inicializar() {
             descripcion TEXT NOT NULL,
             fecha_inicio TEXT NOT NULL,
             fecha_cierre TEXT,
+			costo REAL DEFAULT 0,
             habilitado BOOLEAN NOT NULL DEFAULT 1
         );
     `)
@@ -150,10 +152,10 @@ func Inicializar() {
 	DB.QueryRow("SELECT COUNT(*) FROM usuarios").Scan(&countUsuarios)
 	if countUsuarios == 0 {
 		_, err = DB.Exec(`
-            INSERT INTO usuarios (usuario, nombre, apellido, rol, proyecto, contraseña, administrador) VALUES
-            ('akoto', 'Ana', 'Koto', 'Supervisor', 'Agrícola', 'pass123', TRUE),
-            ('lrojas', 'Luis', 'Rojas', 'Operador', 'Forestal', 'pass456', FALSE),
-            ('mvera', 'María', 'Vera', 'Supervisor', 'Minería', 'pass789', FALSE);
+            INSERT INTO usuarios (usuario, cedula, nombre, apellido, rol, proyecto, contraseña, administrador) VALUES
+            ('akoto', 'V-28337552', 'Ana', 'Koto', 'Supervisor', 'Agrícola', 'pass123', TRUE),
+            ('lrojas','V-2466551', 'Luis', 'Rojas', 'Operador', 'Forestal', 'pass456', FALSE),
+            ('mvera', 'V-0866534', 'María', 'Vera', 'Supervisor', 'Minería', 'pass789', FALSE);
         `)
 		if err != nil {
 			log.Fatal(err)

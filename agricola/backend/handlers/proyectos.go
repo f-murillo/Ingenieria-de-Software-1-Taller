@@ -49,7 +49,7 @@ func ObtenerProyectos(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
-	rows, err := db.DB.Query("SELECT id, descripcion, fecha_inicio, fecha_cierre, habilitado FROM proyectos")
+	rows, err := db.DB.Query("SELECT id, descripcion, fecha_inicio, fecha_cierre, costo, habilitado FROM proyectos")
 	if err != nil {
 		http.Error(w, "Error al consultar proyectos", http.StatusInternalServerError)
 		return
@@ -59,7 +59,7 @@ func ObtenerProyectos(w http.ResponseWriter, r *http.Request) {
 	var proyectos []models.Proyecto
 	for rows.Next() {
 		var p models.Proyecto
-		if err := rows.Scan(&p.ID, &p.Descripcion, &p.FechaInicio, &p.FechaCierre, &p.Habilitado); err != nil {
+		if err := rows.Scan(&p.ID, &p.Descripcion, &p.FechaInicio, &p.FechaCierre, &p.Costo, &p.Habilitado); err != nil {
 			http.Error(w, "Error al leer datos", http.StatusInternalServerError)
 			return
 		}
@@ -302,4 +302,17 @@ func ActualizarProyecto(w http.ResponseWriter, r *http.Request) {
 		FechaCierre: datos.FechaCierre,
 	}
 	json.NewEncoder(w).Encode(proyecto)
+}
+
+func ActualizarCostoProyecto(proyectoID int) error {
+	_, err := db.DB.Exec(`
+        UPDATE proyectos
+        SET costo = (
+            SELECT IFNULL(SUM(costo), 0)
+            FROM actividades_por_proyecto
+            WHERE proyecto_id = ?
+        )
+        WHERE id = ?
+    `, proyectoID, proyectoID)
+	return err
 }

@@ -15,6 +15,7 @@ export default function AdminPanel({ creador }: Props) {
     nombre: '',
     apellido: '',
     rol: '',
+    cedula: '',
     administrador: false,
   });
   const [mensaje, setMensaje] = useState('');
@@ -58,6 +59,7 @@ export default function AdminPanel({ creador }: Props) {
         nombre: '',
         apellido: '',
         rol: '',
+        cedula: '',
         administrador: false,
       });
       const actualizados = await obtenerUsuarios();
@@ -104,6 +106,14 @@ export default function AdminPanel({ creador }: Props) {
             onChange={e => setNuevoUsuario({ ...nuevoUsuario, usuario: e.target.value })}
             className="border p-2 w-full"
             required
+          />
+          <input
+            data-testid="input-nueva-cedula"
+            type="text"
+            placeholder="Cédula"
+            value={nuevoUsuario.cedula}
+            onChange={e => setNuevoUsuario({ ...nuevoUsuario, cedula: e.target.value })}
+            className="border p-2 w-full"
           />
           <input
             data-testid="input-nueva-contrasena"
@@ -162,6 +172,7 @@ export default function AdminPanel({ creador }: Props) {
                   nombre: '',
                   apellido: '',
                   rol: '',
+                  cedula: '',
                   administrador: false,
                 });
               }}
@@ -182,6 +193,7 @@ export default function AdminPanel({ creador }: Props) {
             <tr className="bg-gray-200 text-left">
               <th className="p-2 border">ID</th>
               <th className="p-2 border">Usuario</th>
+              <th className="p-2 border">Cédula</th>
               <th className="p-2 border">Nombre</th>
               <th className="p-2 border">Apellido</th>
               <th className="p-2 border">Rol</th>
@@ -195,6 +207,7 @@ export default function AdminPanel({ creador }: Props) {
               <tr key={u.usuario} className="border-t">
                 <td className="p-2 border">{u.id}</td>
                 <td className="p-2 border">{u.usuario}</td>
+                <td className="p-2 border">{u.cedula}</td>
                 <td className="p-2 border">{u.nombre}</td>
                 <td className="p-2 border">{u.apellido}</td>
                 <td className="p-2 border">
