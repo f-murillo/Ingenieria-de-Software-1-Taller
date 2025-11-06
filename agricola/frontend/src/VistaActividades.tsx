@@ -36,6 +36,8 @@ export default function VistaActividades({ usuario, mostrarToast }: Props) {
     implemento_id: 0,
     usuario_id: 0,
     recurso_humano: '',
+    observaciones: '',
+    costo: 0,
   });
 
   useEffect(() => {
@@ -81,6 +83,8 @@ export default function VistaActividades({ usuario, mostrarToast }: Props) {
         implemento_id: 0,
         usuario_id: 0,
         recurso_humano: '',
+        observaciones: '',
+        costo: 0,
       });
       setUsuariosProyecto([]);
       setMostrarFormulario(false);
@@ -199,7 +203,27 @@ export default function VistaActividades({ usuario, mostrarToast }: Props) {
                 className="w-full p-2 border rounded"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Observaciones</label>
+              <textarea
+                value={form.observaciones}
+                onChange={e => setForm({ ...form, observaciones: e.target.value })}
+                className="w-full p-2 border rounded"
+                rows={3}
+              />
+            </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Costo</label>
+              <input
+                type="number"
+                value={form.costo}
+                onChange={e => setForm({ ...form, costo: parseFloat(e.target.value) })}
+                className="w-full p-2 border rounded"
+                min={0}
+                step="0.01"
+              />
+            </div>
             <div className="flex gap-4">
               <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:cursor-pointer">
                 Crear actividad
@@ -214,6 +238,8 @@ export default function VistaActividades({ usuario, mostrarToast }: Props) {
                     implemento_id: 0,
                     usuario_id: 0,
                     recurso_humano: '',
+                    observaciones: '',
+                    costo: 0,
                   });
                   setUsuariosProyecto([]);
                 }}
@@ -235,17 +261,22 @@ export default function VistaActividades({ usuario, mostrarToast }: Props) {
             <th className="px-4 py-2">Equipos e Implementos</th>
             <th className="px-4 py-2">Encargado/a</th>
             <th className="px-4 py-2">Recurso humano</th>
+            <th className="px-4 py-2">Observaciones</th>
+            <th className="px-4 py-2">Costo</th>  
             <th className="px-4 py-2">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {actividades.map(act => (
+          {(actividades ?? []).map(act => (
             <tr key={act.id} className="border-t">
               <td className="px-4 py-2">{act.proyecto}</td>
               <td className="px-4 py-2">{act.actividad}</td>
               <td className="px-4 py-2">{act.implemento}</td>
               <td className="px-4 py-2">{act.usuario}</td>
               <td className="px-4 py-2">{act.recurso_humano}</td>
+              <td className="px-4 py-2">{act.observaciones}</td>
+              <td className="px-4 py-2">{act.costo} Bs</td>
+
               <td className="px-4 py-2">
                 <button
                   onClick={() => manejarEliminar(act.id)}

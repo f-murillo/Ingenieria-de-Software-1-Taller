@@ -91,6 +91,8 @@ func Inicializar() {
         implemento_id INTEGER,
         usuario_id INTEGER,
         recurso_humano TEXT,
+		observaciones TEXT,
+        costo REAL,
         FOREIGN KEY (proyecto_id) REFERENCES proyectos(id),
         FOREIGN KEY (actividad_id) REFERENCES labores_agronomicas(id),
         FOREIGN KEY (implemento_id) REFERENCES equipos_implementos(id),
@@ -135,8 +137,8 @@ func Inicializar() {
 	DB.QueryRow("SELECT COUNT(*) FROM actividades_por_proyecto").Scan(&countActividades)
 	if countActividades == 0 {
 		_, err = DB.Exec(`
-        INSERT INTO actividades_por_proyecto (proyecto_id, actividad_id, implemento_id, usuario_id, recurso_humano)
-        VALUES (1, 1, 1, 1, '3 jornaleros');
+        INSERT INTO actividades_por_proyecto (proyecto_id, actividad_id, implemento_id, usuario_id, recurso_humano, observaciones, costo)
+        VALUES (1, 1, 1, 1, '3 jornaleros', 'Sin observaciones', 100.0);
     `)
 		if err != nil {
 			log.Fatal(err)

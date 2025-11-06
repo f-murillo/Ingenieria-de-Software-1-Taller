@@ -29,7 +29,9 @@ func ObtenerActividades(w http.ResponseWriter, r *http.Request) {
             la.titulo AS actividad,
             ei.titulo AS implemento,
             u.nombre || ' ' || u.apellido AS usuario,
-            ap.recurso_humano
+            ap.recurso_humano,
+			ap.observaciones,
+			ap.costo
         FROM actividades_por_proyecto ap
         JOIN proyectos p ON ap.proyecto_id = p.id
         JOIN labores_agronomicas la ON ap.actividad_id = la.id
@@ -45,7 +47,7 @@ func ObtenerActividades(w http.ResponseWriter, r *http.Request) {
 	var actividades []models.ActividadPorProyecto
 	for rows.Next() {
 		var act models.ActividadPorProyecto
-		if err := rows.Scan(&act.ID, &act.Proyecto, &act.Actividad, &act.Implemento, &act.Usuario, &act.RecursoHumano); err != nil {
+		if err := rows.Scan(&act.ID, &act.Proyecto, &act.Actividad, &act.Implemento, &act.Usuario, &act.RecursoHumano, &act.Observaciones, &act.Costo); err != nil {
 			http.Error(w, "Error al leer datos", http.StatusInternalServerError)
 			return
 		}
@@ -88,8 +90,8 @@ func CrearActividad(w http.ResponseWriter, r *http.Request) {
 	// Si la validación pasa, insertamos
 	stmt, err := db.DB.Prepare(`
         INSERT INTO actividades_por_proyecto 
-        (proyecto_id, actividad_id, implemento_id, usuario_id, recurso_humano) 
-        VALUES (?, ?, ?, ?, ?)
+        (proyecto_id, actividad_id, implemento_id, usuario_id, recurso_humano, observaciones, costo) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `)
 	if err != nil {
 		http.Error(w, "Error al preparar consulta", http.StatusInternalServerError)
@@ -97,7 +99,7 @@ func CrearActividad(w http.ResponseWriter, r *http.Request) {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(act.ProyectoID, act.ActividadID, act.ImplementoID, act.UsuarioID, act.RecursoHumano)
+	result, err := stmt.Exec(act.ProyectoID, act.ActividadID, act.ImplementoID, act.UsuarioID, act.RecursoHumano, act.Observaciones, act.Costo)
 	if err != nil {
 		http.Error(w, "Error al insertar actividad", http.StatusInternalServerError)
 		return
@@ -110,6 +112,8 @@ func CrearActividad(w http.ResponseWriter, r *http.Request) {
 
 func ActualizarActividad(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 
 	path := strings.TrimPrefix(r.URL.Path, "/api/actividades/")
@@ -144,9 +148,9 @@ func ActualizarActividad(w http.ResponseWriter, r *http.Request) {
 
 	_, err = db.DB.Exec(`
         UPDATE actividades_por_proyecto 
-        SET proyecto_id = ?, actividad_id = ?, implemento_id = ?, usuario_id = ?, recurso_humano = ?
+        SET proyecto_id = ?, actividad_id = ?, implemento_id = ?, usuario_id = ?, recurso_humano = ?, observaciones = ?, costo = ?
         WHERE id = ?
-    `, act.ProyectoID, act.ActividadID, act.ImplementoID, act.UsuarioID, act.RecursoHumano, id)
+    `, act.ProyectoID, act.ActividadID, act.ImplementoID, act.UsuarioID, act.RecursoHumano, act.Observaciones, act.Costo, id)
 	if err != nil {
 		http.Error(w, "Error al actualizar actividad", http.StatusInternalServerError)
 		return
@@ -158,6 +162,8 @@ func ActualizarActividad(w http.ResponseWriter, r *http.Request) {
 func EliminarActividad(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	path := strings.TrimPrefix(r.URL.Path, "/api/actividades/")
 	id, err := strconv.Atoi(path)

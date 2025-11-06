@@ -30,6 +30,8 @@ export interface ActividadPorProyecto {
   implemento: string;
   usuario: string;
   recurso_humano: string;
+  observaciones: string;
+  costo: number;
 }
 
 export interface ActividadInput {
@@ -39,6 +41,8 @@ export interface ActividadInput {
   implemento_id: number;
   usuario_id: number;
   recurso_humano: string;
+  observaciones: string;
+  costo: number;
 }
 
 export interface LaborAgronomica {
