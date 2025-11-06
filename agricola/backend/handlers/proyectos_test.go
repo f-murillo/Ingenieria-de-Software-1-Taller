@@ -127,7 +127,7 @@ func TestActualizarEstadoProyecto(t *testing.T) {
 		t.Errorf("esperado status 200, obtuve %d", resp.StatusCode)
 	}
 
-	// Verificar que se actualizó
+	// Verificar que se actualizo el proyecto
 	var estado bool
 	err = db.DB.QueryRow("SELECT habilitado FROM proyectos WHERE id = 1").Scan(&estado)
 	if err != nil {

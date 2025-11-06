@@ -7,6 +7,7 @@ interface Props {
 }
 
 export default function AdminPanel({ creador }: Props) {
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [nuevoUsuario, setNuevoUsuario] = useState({
     usuario: '',
@@ -82,62 +83,97 @@ export default function AdminPanel({ creador }: Props) {
 
       {mensaje && <p className="text-green-600">{mensaje}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 rounded shadow">
-        <input
-          data-testid="input-nuevo-usuario"
-          type="text"
-          placeholder="Usuario"
-          value={nuevoUsuario.usuario}
-          onChange={e => setNuevoUsuario({ ...nuevoUsuario, usuario: e.target.value })}
-          className="border p-2 w-full"
-          required
-        />
-        <input
-          data-testid="input-nueva-contrasena"
-          type="password"
-          placeholder="Contraseña"
-          value={nuevoUsuario.contraseña}
-          onChange={e => setNuevoUsuario({ ...nuevoUsuario, contraseña: e.target.value })}
-          className="border p-2 w-full"
-          required
-        />
-        <input
-          data-testid="input-nuevo-nombre"
-          type="text"
-          placeholder="Nombre"
-          value={nuevoUsuario.nombre}
-          onChange={e => setNuevoUsuario({ ...nuevoUsuario, nombre: e.target.value })}
-          className="border p-2 w-full"
-        />
-        <input
-          data-testid="input-nuevo-apellido"
-          type="text"
-          placeholder="Apellido"
-          value={nuevoUsuario.apellido}
-          onChange={e => setNuevoUsuario({ ...nuevoUsuario, apellido: e.target.value })}
-          className="border p-2 w-full"
-        />
-        <input
-          data-testid="input-nuevo-rol"
-          type="text"
-          placeholder="Rol"
-          value={nuevoUsuario.rol}
-          onChange={e => setNuevoUsuario({ ...nuevoUsuario, rol: e.target.value })}
-          className="border p-2 w-full"
-        />
-        <label className="flex items-center space-x-2">
-          <input
-            data-testid="input-nuevo-administrador"
-            type="checkbox"
-            checked={nuevoUsuario.administrador}
-            onChange={e => setNuevoUsuario({ ...nuevoUsuario, administrador: e.target.checked })}
-          />
-          <span>Administrador</span>
-        </label>
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-          Crear usuario
+    <div className="space-y-4">
+      {!mostrarFormulario ? (
+        <button
+          data-testid="boton-agregar-usuario"
+          onClick={() => setMostrarFormulario(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:cursor-pointer"
+        >
+          Agregar usuario
         </button>
-      </form>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 rounded shadow">
+          <h3 className="text-lg font-semibold text-gray-800">Nuevo Usuario</h3>
+
+          <input
+            data-testid="input-nuevo-usuario"
+            type="text"
+            placeholder="Usuario"
+            value={nuevoUsuario.usuario}
+            onChange={e => setNuevoUsuario({ ...nuevoUsuario, usuario: e.target.value })}
+            className="border p-2 w-full"
+            required
+          />
+          <input
+            data-testid="input-nueva-contrasena"
+            type="password"
+            placeholder="Contraseña"
+            value={nuevoUsuario.contraseña}
+            onChange={e => setNuevoUsuario({ ...nuevoUsuario, contraseña: e.target.value })}
+            className="border p-2 w-full"
+            required
+          />
+          <input
+            data-testid="input-nuevo-nombre"
+            type="text"
+            placeholder="Nombre"
+            value={nuevoUsuario.nombre}
+            onChange={e => setNuevoUsuario({ ...nuevoUsuario, nombre: e.target.value })}
+            className="border p-2 w-full"
+          />
+          <input
+            data-testid="input-nuevo-apellido"
+            type="text"
+            placeholder="Apellido"
+            value={nuevoUsuario.apellido}
+            onChange={e => setNuevoUsuario({ ...nuevoUsuario, apellido: e.target.value })}
+            className="border p-2 w-full"
+          />
+          <input
+            data-testid="input-nuevo-rol"
+            type="text"
+            placeholder="Rol"
+            value={nuevoUsuario.rol}
+            onChange={e => setNuevoUsuario({ ...nuevoUsuario, rol: e.target.value })}
+            className="border p-2 w-full"
+          />
+          <label className="flex items-center space-x-2">
+            <input
+              data-testid="input-nuevo-administrador"
+              type="checkbox"
+              checked={nuevoUsuario.administrador}
+              onChange={e => setNuevoUsuario({ ...nuevoUsuario, administrador: e.target.checked })}
+            />
+            <span>Administrador</span>
+          </label>
+
+          <div className="flex gap-4">
+            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:cursor-pointer">
+              Crear usuario
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMostrarFormulario(false);
+                setNuevoUsuario({
+                  usuario: '',
+                  contraseña: '',
+                  nombre: '',
+                  apellido: '',
+                  rol: '',
+                  administrador: false,
+                });
+              }}
+              className="bg-gray-400 text-white px-4 py-2 rounded hover:cursor-pointer"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+
 
       <div className="bg-white p-4 rounded shadow overflow-x-auto">
         <h3 className="text-lg font-semibold mb-2">Usuarios registrados</h3>

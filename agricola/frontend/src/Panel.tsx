@@ -33,6 +33,16 @@ export default function Panel({ administrador, onSeleccion, onLogout, mensaje }:
             onClick={() => onSeleccion('actividades')} className="block w-full text-left hover:underline hover:cursor-pointer">
             Gestionar actividades
           </button>
+          <button
+            data-testid="btn-labores"
+            onClick={() => onSeleccion('labores')} className="block w-full text-left hover:underline hover:cursor-pointer">
+            Gestionar labores
+          </button>
+          <button
+            data-testid="btn-equipos"
+            onClick={() => onSeleccion('equipos')} className="block w-full text-left hover:underline hover:cursor-pointer">
+            Gestionar equipos
+          </button>
         </>
         
       ) : (

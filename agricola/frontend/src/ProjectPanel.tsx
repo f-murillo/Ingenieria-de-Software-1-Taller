@@ -409,7 +409,7 @@ function FormularioProyecto({ onCrear }: { onCrear: (p: ProyectoSinID) => void }
         <button
           data-testid="boton-agregar-proyecto"
           onClick={() => setMostrarFormulario(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:cursor-pointer"
         >
           Agregar proyecto
         </button>
@@ -460,13 +460,13 @@ function FormularioProyecto({ onCrear }: { onCrear: (p: ProyectoSinID) => void }
           </div>
 
           <div className="flex gap-4">
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:cursor-pointer">
               Crear proyecto
             </button>
             <button
               type="button"
               onClick={handleCancelar}
-              className="bg-gray-400 text-white px-4 py-2 rounded"
+              className="bg-gray-400 text-white px-4 py-2 rounded hover:cursor-pointer"
             >
               Cancelar
             </button>

@@ -21,7 +21,7 @@ func TestInicializarEnMemoria(t *testing.T) {
 	// Ejecutamos la lógica de inicialización
 	Inicializar()
 
-	// Verificamos que las tablas existen
+	// Verificamos que las tablas existan
 	tablas := []string{"usuarios", "proyectos", "usuarios_proyectos"}
 	for _, tabla := range tablas {
 		_, err := DB.Query("SELECT * FROM " + tabla + " LIMIT 1")

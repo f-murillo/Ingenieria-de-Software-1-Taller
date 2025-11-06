@@ -1,14 +1,19 @@
 package handlers
 
 import (
+	"database/sql" // Asegúrate de importar "database/sql"
 	"encoding/json"
 	"net/http"
+	"strconv" // Importa "strconv"
+	"strings" // Importa "strings"
 
 	"agricola/db"
 	"agricola/models"
 )
 
+// Tu función existente
 func ObtenerActividades(w http.ResponseWriter, r *http.Request) {
+	// ... (sin cambios)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -48,4 +53,125 @@ func ObtenerActividades(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(actividades)
+}
+
+// --- NUEVAS FUNCIONES ---
+
+func CrearActividad(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	var act models.ActividadInput
+	if err := json.NewDecoder(r.Body).Decode(&act); err != nil {
+		http.Error(w, "Error al decodificar JSON", http.StatusBadRequest)
+		return
+	}
+
+	// --- VALIDACIÓN CLAVE ---
+	// Verificar si el usuario está asociado al proyecto
+	var existe int
+	err := db.DB.QueryRow(`
+        SELECT 1 FROM usuarios_proyectos 
+        WHERE usuario_id = ? AND proyecto_id = ?
+    `, act.UsuarioID, act.ProyectoID).Scan(&existe)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "Error: El usuario seleccionado no está asociado a este proyecto.", http.StatusForbidden)
+			return
+		}
+		http.Error(w, "Error al validar usuario-proyecto", http.StatusInternalServerError)
+		return
+	}
+	// --- FIN VALIDACIÓN ---
+
+	// Si la validación pasa, insertamos
+	stmt, err := db.DB.Prepare(`
+        INSERT INTO actividades_por_proyecto 
+        (proyecto_id, actividad_id, implemento_id, usuario_id, recurso_humano) 
+        VALUES (?, ?, ?, ?, ?)
+    `)
+	if err != nil {
+		http.Error(w, "Error al preparar consulta", http.StatusInternalServerError)
+		return
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(act.ProyectoID, act.ActividadID, act.ImplementoID, act.UsuarioID, act.RecursoHumano)
+	if err != nil {
+		http.Error(w, "Error al insertar actividad", http.StatusInternalServerError)
+		return
+	}
+
+	id, _ := result.LastInsertId()
+	act.ID = int(id)
+	json.NewEncoder(w).Encode(act)
+}
+
+func ActualizarActividad(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	path := strings.TrimPrefix(r.URL.Path, "/api/actividades/")
+	id, err := strconv.Atoi(path)
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	var act models.ActividadInput
+	if err := json.NewDecoder(r.Body).Decode(&act); err != nil {
+		http.Error(w, "Error al decodificar JSON", http.StatusBadRequest)
+		return
+	}
+
+	// --- VALIDACIÓN CLAVE (igual que en Crear) ---
+	var existe int
+	err = db.DB.QueryRow(`
+        SELECT 1 FROM usuarios_proyectos 
+        WHERE usuario_id = ? AND proyecto_id = ?
+    `, act.UsuarioID, act.ProyectoID).Scan(&existe)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "Error: El usuario seleccionado no está asociado a este proyecto.", http.StatusForbidden)
+			return
+		}
+		http.Error(w, "Error al validar usuario-proyecto", http.StatusInternalServerError)
+		return
+	}
+	// --- FIN VALIDACIÓN ---
+
+	_, err = db.DB.Exec(`
+        UPDATE actividades_por_proyecto 
+        SET proyecto_id = ?, actividad_id = ?, implemento_id = ?, usuario_id = ?, recurso_humano = ?
+        WHERE id = ?
+    `, act.ProyectoID, act.ActividadID, act.ImplementoID, act.UsuarioID, act.RecursoHumano, id)
+	if err != nil {
+		http.Error(w, "Error al actualizar actividad", http.StatusInternalServerError)
+		return
+	}
+	act.ID = id
+	json.NewEncoder(w).Encode(act)
+}
+
+func EliminarActividad(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	path := strings.TrimPrefix(r.URL.Path, "/api/actividades/")
+	id, err := strconv.Atoi(path)
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	_, err = db.DB.Exec("DELETE FROM actividades_por_proyecto WHERE id = ?", id)
+	if err != nil {
+		http.Error(w, "Error al eliminar actividad", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"mensaje": "Actividad eliminada correctamente"})
 }
