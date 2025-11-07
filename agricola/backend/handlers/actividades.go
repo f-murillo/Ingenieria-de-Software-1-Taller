@@ -99,9 +99,9 @@ func CrearActividad(w http.ResponseWriter, r *http.Request) {
 	}
 	defer stmt.Close()
 
-	ActualizarCostoProyecto(act.ProyectoID)
-
 	result, err := stmt.Exec(act.ProyectoID, act.ActividadID, act.ImplementoID, act.UsuarioID, act.RecursoHumano, act.Observaciones, act.Costo)
+
+	ActualizarCostoProyecto(act.ProyectoID)
 	if err != nil {
 		http.Error(w, "Error al insertar actividad", http.StatusInternalServerError)
 		return

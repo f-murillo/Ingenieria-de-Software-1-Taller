@@ -135,17 +135,17 @@ func Inicializar() {
 	}
 
 	// Actividad de ejemplo (si la tabla está vacía)
-	var countActividades int
-	DB.QueryRow("SELECT COUNT(*) FROM actividades_por_proyecto").Scan(&countActividades)
-	if countActividades == 0 {
-		_, err = DB.Exec(`
-        INSERT INTO actividades_por_proyecto (proyecto_id, actividad_id, implemento_id, usuario_id, recurso_humano, observaciones, costo)
-        VALUES (1, 1, 1, 1, '3 jornaleros', 'Sin observaciones', 100.0);
-    `)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
+	//	var countActividades int
+	//	DB.QueryRow("SELECT COUNT(*) FROM actividades_por_proyecto").Scan(&countActividades)
+	//	if countActividades == 0 {
+	//		_, err = DB.Exec(`
+	//        INSERT INTO actividades_por_proyecto (proyecto_id, actividad_id, implemento_id, usuario_id, recurso_humano, observaciones, costo)
+	//        VALUES (1, 1, 1, 1, '3 jornaleros', 'Sin observaciones', 100.0);
+	//    `)
+	//		if err != nil {
+	//			log.Fatal(err)
+	//		}
+	//	}
 
 	// Usuarios de ejemplo (si la tabla esta vacia)
 	var countUsuarios int
