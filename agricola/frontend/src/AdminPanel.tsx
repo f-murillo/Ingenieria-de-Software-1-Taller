@@ -255,7 +255,7 @@ export default function AdminPanel({ creador }: Props) {
                     <button
                       data-testid={`btn-confirmar-rol-${u.id}`}
                       onClick={() => confirmarCambioRol(u.id)}
-                      className="text-green-600 hover:text-green-800"
+                      className="text-green-600 hover:text-green-800 hover:cursor-pointer"
                     >
                       ✅
                     </button>
@@ -263,7 +263,7 @@ export default function AdminPanel({ creador }: Props) {
                     <button
                       data-testid={`btn-editar-rol-${u.id}`}
                       onClick={() => iniciarEdicionRol(u.id, u.rol)}
-                      className="text-yellow-600 hover:text-yellow-800"
+                      className="text-yellow-600 hover:text-yellow-800 hover:cursor-pointer"
                     >
                       ✏️
                     </button>

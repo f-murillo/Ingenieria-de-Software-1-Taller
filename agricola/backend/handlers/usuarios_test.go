@@ -21,11 +21,11 @@ func setupUsuariosTestDB(t *testing.T) {
 		t.Fatalf("Error al abrir base en memoria: %v", err)
 	}
 
-	// Crear tabla de usuarios
 	_, err = db.DB.Exec(`
         CREATE TABLE usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             usuario TEXT,
+            cedula TEXT,
             nombre TEXT,
             apellido TEXT,
             rol TEXT,
@@ -38,10 +38,9 @@ func setupUsuariosTestDB(t *testing.T) {
 		t.Fatalf("Error al crear tabla usuarios: %v", err)
 	}
 
-	// Insertar usuario administrador
 	_, err = db.DB.Exec(`
-        INSERT INTO usuarios (usuario, nombre, apellido, rol, proyecto, contraseña, administrador)
-        VALUES ('admin', 'Admin', 'Root', 'Supervisor', 'Agrícola', 'adminpass', TRUE)
+        INSERT INTO usuarios (usuario, cedula, nombre, apellido, rol, proyecto, contraseña, administrador)
+        VALUES ('admin', 'V-00000000', 'Admin', 'Root', 'Supervisor', 'Agrícola', 'adminpass', TRUE)
     `)
 	if err != nil {
 		t.Fatalf("Error al insertar usuario admin: %v", err)
@@ -78,6 +77,7 @@ func TestCrearUsuario(t *testing.T) {
 
 	body := `{
         "usuario": "jdoe",
+        "cedula": "V-12345678",
         "nombre": "John",
         "apellido": "Doe",
         "rol": "Operador",
@@ -105,7 +105,7 @@ func TestCrearUsuario(t *testing.T) {
 		t.Errorf("Error al decodificar respuesta: %v", err)
 	}
 
-	if u.Usuario != "jdoe" || u.ID == 0 {
+	if u.Usuario != "jdoe" || u.ID == 0 || u.Cedula != "V-12345678" {
 		t.Errorf("Usuario creado incorrectamente: %+v", u)
 	}
 }
@@ -132,7 +132,7 @@ func TestLogin(t *testing.T) {
 		t.Errorf("Error al decodificar respuesta: %v", err)
 	}
 
-	if u.Usuario != "admin" {
+	if u.Usuario != "admin" || !u.Administrador {
 		t.Errorf("Login fallido, se obtuvo: %+v", u)
 	}
 }
@@ -140,10 +140,9 @@ func TestLogin(t *testing.T) {
 func TestActualizarRolUsuario(t *testing.T) {
 	setupUsuariosTestDB(t)
 
-	// Insertar usuario adicional
 	_, err := db.DB.Exec(`
-        INSERT INTO usuarios (usuario, nombre, apellido, rol, proyecto, contraseña, administrador)
-        VALUES ('jdoe', 'John', 'Doe', 'Operador', 'Forestal', '1234', FALSE)
+        INSERT INTO usuarios (usuario, cedula, nombre, apellido, rol, proyecto, contraseña, administrador)
+        VALUES ('jdoe', 'V-12345678', 'John', 'Doe', 'Operador', 'Forestal', '1234', FALSE)
     `)
 	if err != nil {
 		t.Fatalf("Error al insertar usuario jdoe: %v", err)
