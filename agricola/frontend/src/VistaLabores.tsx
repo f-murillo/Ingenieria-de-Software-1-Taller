@@ -75,6 +75,7 @@ export default function VistaLabores({ mostrarToast }: Props) {
 
       <div className="mb-4 flex gap-2">
         <input
+          data-testid="input-labores"
           type="text"
           value={nuevaLabor}
           onChange={e => setNuevaLabor(e.target.value)}
@@ -82,6 +83,7 @@ export default function VistaLabores({ mostrarToast }: Props) {
           className="border px-2 py-1 w-full"
         />
         <button
+          data-testid="btn-agregar-labores"
           onClick={manejarCrear}
           className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
         >
@@ -103,7 +105,8 @@ export default function VistaLabores({ mostrarToast }: Props) {
               <td className="px-4 py-2">{l.id}</td>
               <td className="px-4 py-2">
                 {editandoId === l.id ? (
-                  <input
+                  <input   
+                    data-testid={`input-titulo-labores-${l.id}`}
                     type="text"
                     value={tituloEditado}
                     onChange={e => setTituloEditado(e.target.value)}
@@ -117,12 +120,14 @@ export default function VistaLabores({ mostrarToast }: Props) {
                 {editandoId === l.id ? (
                   <>
                     <button
+                      data-testid={`guardar-labores-${l.id}`}
                       onClick={() => manejarActualizar(l.id)}
                       className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                     >
                       Guardar
                     </button>
                     <button
+                      data-testid={`cancelar-labores-${l.id}`}
                       onClick={() => {
                         setEditandoId(null);
                         setTituloEditado('');
@@ -135,6 +140,7 @@ export default function VistaLabores({ mostrarToast }: Props) {
                 ) : (
                   <>
                     <button
+                      data-testid={`btn-editar-labores-${l.id}`}
                       onClick={() => {
                         setEditandoId(l.id);
                         setTituloEditado(l.titulo);
@@ -144,6 +150,7 @@ export default function VistaLabores({ mostrarToast }: Props) {
                       Editar
                     </button>
                     <button
+                      data-testid={`btn-eliminar-labores-${l.id}`}
                       onClick={() => manejarEliminar(l.id)}
                       className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                     >

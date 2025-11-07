@@ -14,7 +14,6 @@ describe('Test de login', () => {
     cy.get('[data-testid="input-contraseña"]').type('pass123')
     cy.get('[data-testid="button-submit"]').click()
     cy.contains('Bienvenido,').should('be.visible')
-    cy.wait(2000)
   })
 
     it('Realiza un login de usuario', () => {
@@ -23,7 +22,6 @@ describe('Test de login', () => {
     cy.get('[data-testid="input-contraseña"]').type('pass456')
     cy.get('[data-testid="button-submit"]').click()
     cy.contains('Bienvenido,').should('be.visible')
-    cy.wait(2000)
   })
 
   it('Realiza un login fallido', () => {
@@ -43,6 +41,7 @@ describe('Usuarios', () => {
     cy.get('[data-testid="button-submit"]').click()
     cy.get('[data-testid="btn-usuarios"]').click()
     // Rellenar el formulario de nuevo usuario
+    cy.get('[data-testid=boton-agregar-usuario]').click()
     cy.get('[data-testid="input-nuevo-usuario"]').type('nuevo_usuario')
     cy.get('[data-testid="input-nueva-contrasena"]').type('nueva_contraseña')
     cy.get('[data-testid="input-nuevo-nombre"]').type('Nuevo')
@@ -97,11 +96,10 @@ describe('Proyectos', () => {
     cy.get('[data-testid="button-submit"]').click()
     cy.get('[data-testid="btn-proyectos"]').click()
     cy.get('[data-testid="btn-ver-usuarios-1"]').click()
-//    cy.contains('No hay usuarios').should('be.visible')
-//    cy.get('[data-testid="btn-asignar-usuarios-1"]').click()
-//    cy.get('[data-testid="select-usuarios-disponibles"]').select(['3'])
-//    cy.get('button[type="submit"]').click()
-//    cy.contains('Usuarios asociados correctamente').should('be.visible')
+    cy.get('[data-testid="btn-asignar-usuarios-1"]').click()
+    cy.get('[data-testid="select-usuarios-disponibles"]').select(['3'])
+    cy.get('button[type="submit"]').click()
+    cy.contains('Usuarios asociados correctamente').should('be.visible')
     cy.get('[data-testid="btn-detalles-proyecto-1"]').click()
     cy.get('[data-testid="btn-eliminar-proyecto-1"]').click()
     cy.get('[data-testid="btn-activar-proyecto-1"]').click()
@@ -118,5 +116,92 @@ describe('Proyectos', () => {
   })
 
 
+
+
+
+})
+
+describe('Actividades', () => {
+  it('Agrega una nueva actividad', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-actividades"]').click()
+    cy.get('[data-testid="boton-agregar-actividad"]').click()
+    cy.get('[data-testid="selec-project"]').select('Nuevo nombre del proyecto')
+    cy.get('[data-testid="selec-labor"]').select('Siembra directa')
+    cy.get('[data-testid="selec-equipo"]').select('Pulverizador de mochila')
+    cy.get('[data-testid="selec-usuario"]').select('María Vera')
+    cy.get('[data-testid="input-recurso-humano"]').type('5')
+    cy.get('[data-testid="textarea-observaciones"]').type('Siembra en el Este')
+    cy.get('[data-testid="number-numero"]').clear().type('200')
+    cy.get('[data-testid="btn-formulario-actividades"]').click()
+    cy.contains('Actividad creada correctamente').should('be.visible')
+    cy.get('[data-testid="btn-eliminar-actividades-1"]').click()
+    cy.contains('Actividad eliminada').should('be.visible')
+  })
+  
+
+})
+
+describe('Labores', () => {
+  it('Labores', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-labores"]').click()
+    cy.get('[data-testid="input-labores"]').type('Labor de prueba')
+    cy.get('[data-testid="btn-agregar-labores"]').click()
+  })
+  
+  it('Botones', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-labores"]').click()
+    cy.get('[data-testid="btn-editar-labores-1"]').click()
+    cy.get('[data-testid="input-titulo-labores-1"]').clear().type('Nombre de prueba')
+    cy.get('[data-testid="guardar-labores-1"]').click()
+    cy.get('[data-testid="btn-editar-labores-1"]').click()
+    cy.get('[data-testid="input-titulo-labores-1"]').clear().type('Nombre de prueba')
+    cy.get('[data-testid="cancelar-labores-1"]').click()
+    cy.get('[data-testid="btn-eliminar-labores-1"]').click()
+    cy.contains('Labor eliminada correctamente').should('be.visible')
+    
+  })
+
+})
+
+describe('Equipos', () => {
+  it('Equipos', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-equipos"]').click()
+    cy.get('[data-testid="input-equipos"]').type('Equipo de prueba')
+    cy.get('[data-testid="btn-agregar-equipos"]').click()
+  })
+  
+  it('Botones', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-equipos"]').click()
+    cy.get('[data-testid="btn-editar-equipos-1"]').click()
+    cy.get('[data-testid="input-titulo-equipos-1"]').clear().type('Nombre de prueba')
+    cy.get('[data-testid="btn-guardar-equipos-1"]').click()
+    cy.get('[data-testid="btn-editar-equipos-1"]').click()//
+    cy.get('[data-testid="input-titulo-equipos-1"]').clear().type('Nombre de prueba')
+    cy.get('[data-testid="cancelar-equipos-1"]').click()
+    cy.get('[data-testid="btn-eliminar-equipos-1"]').click()
+    cy.contains('Equipo eliminado correctamente').should('be.visible')
+    
+  })
+  
 
 })

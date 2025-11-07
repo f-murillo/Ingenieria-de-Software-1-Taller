@@ -75,6 +75,7 @@ export default function VistaEquipos({ mostrarToast }: Props) {
 
       <div className="mb-4 flex gap-2">
         <input
+          data-testid="input-equipos"
           type="text"
           value={nuevoEquipo}
           onChange={e => setNuevoEquipo(e.target.value)}
@@ -82,6 +83,7 @@ export default function VistaEquipos({ mostrarToast }: Props) {
           className="border px-2 py-1 w-full"
         />
         <button
+          data-testid="btn-agregar-equipos"
           onClick={manejarCrear}
           className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
         >
@@ -104,6 +106,7 @@ export default function VistaEquipos({ mostrarToast }: Props) {
               <td className="px-4 py-2">
                 {editandoId === e.id ? (
                   <input
+                    data-testid={`input-titulo-equipos-${e.id}`}
                     type="text"
                     value={tituloEditado}
                     onChange={ev => setTituloEditado(ev.target.value)}
@@ -117,12 +120,14 @@ export default function VistaEquipos({ mostrarToast }: Props) {
                 {editandoId === e.id ? (
                   <>
                     <button
+                      data-testid={`btn-guardar-equipos-${e.id}`}
                       onClick={() => manejarActualizar(e.id)}
                       className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                     >
                       Guardar
                     </button>
                     <button
+                      data-testid={`cancelar-equipos-${e.id}`}
                       onClick={() => {
                         setEditandoId(null);
                         setTituloEditado('');
@@ -135,6 +140,8 @@ export default function VistaEquipos({ mostrarToast }: Props) {
                 ) : (
                   <>
                     <button
+                      
+                      data-testid={`btn-editar-equipos-${e.id}`}
                       onClick={() => {
                         setEditandoId(e.id);
                         setTituloEditado(e.titulo);
@@ -144,6 +151,7 @@ export default function VistaEquipos({ mostrarToast }: Props) {
                       Editar
                     </button>
                     <button
+                      data-testid={`btn-eliminar-equipos-${e.id}`}
                       onClick={() => manejarEliminar(e.id)}
                       className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                     >
