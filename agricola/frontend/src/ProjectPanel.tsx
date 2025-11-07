@@ -171,10 +171,10 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
             <thead>
               <tr className="bg-gray-200 text-left">
                 <th className="p-2 border">ID</th>
-                <th className="p-2 border">Costo total</th>
                 <th className="p-2 border">Descripción</th>
                 <th className="p-2 border">Inicio</th>
                 <th className="p-2 border">Cierre</th>
+                <th className="p-2 border">Costo total</th>
                 {usuario.administrador && <th className="p-2 border">Usuarios</th>}
                 <th className="p-2 border"></th>
                 <th className="p-2 border"></th>
@@ -280,7 +280,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                         <button
                           data-testid={`btn-confirmar-${p.id}`}
                           onClick={() => confirmarEdicionProyecto(p.id)}
-                          className="text-green-600 hover:text-green-800"
+                          className="text-green-600 hover:text-green-800 hover:cursor-pointer"
                         >
                           ✅
                         </button>
@@ -288,7 +288,7 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                         <button
                           data-testid={`btn-editar-${p.id}`}
                           onClick={() => iniciarEdicionProyecto(p)}
-                          className="text-yellow-600 hover:text-yellow-800"
+                          className="text-yellow-600 hover:text-yellow-800 hover:cursor-pointer"
                         >
                           ✏️
                         </button>
@@ -300,26 +300,26 @@ const cambiarEstadoProyecto = async (id: number, habilitado: boolean) => {
                   <td className="p-2 border">
                     <button 
                       data-testid={`btn-detalles-proyecto-${p.id}`}
-                    className="text-blue-600 hover:text-blue-800">📄</button>
+                    className="text-blue-600 hover:text-blue-800 hover:cursor-pointer">📄</button>
                   </td>
                   <td className="p-2 border">
                     <button
                       data-testid={`btn-eliminar-proyecto-${p.id}`}
                     onClick={() => cambiarEstadoProyecto(p.id, false)}
-                      className="text-red-600 hover:text-red-800"
+                      className="text-red-600 hover:text-red-800 hover:cursor-pointer"
                     >🚫</button>
                   </td>
                   <td className="p-2 border">
                     <button 
                       data-testid={`btn-activar-proyecto-${p.id}`}
                     onClick={() => cambiarEstadoProyecto(p.id, true)}
-                      className="text-green-600 hover:text-green-800"
+                      className="text-green-600 hover:text-green-800 hover:cursor-pointer"
                     >✔️</button>
                   </td>
                   <td className="p-2 border">
                     <button 
                       data-testid={`btn-imprimir-proyecto-${p.id}`}
-                    className="text-gray-600 hover:text-gray-800">🖨️</button>
+                    className="text-gray-600 hover:text-gray-800 hover:cursor-pointer">🖨️</button>
                   </td>
                 </tr>
               ))}

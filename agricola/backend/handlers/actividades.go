@@ -1,19 +1,17 @@
 package handlers
 
 import (
-	"database/sql" // Asegúrate de importar "database/sql"
+	"database/sql"
 	"encoding/json"
 	"net/http"
-	"strconv" // Importa "strconv"
-	"strings" // Importa "strings"
+	"strconv"
+	"strings"
 
 	"agricola/db"
 	"agricola/models"
 )
 
-// Tu función existente
 func ObtenerActividades(w http.ResponseWriter, r *http.Request) {
-	// ... (sin cambios)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -57,8 +55,6 @@ func ObtenerActividades(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(actividades)
 }
 
-// --- NUEVAS FUNCIONES ---
-
 func CrearActividad(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -69,7 +65,6 @@ func CrearActividad(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// --- VALIDACIÓN CLAVE ---
 	// Verificar si el usuario está asociado al proyecto
 	var existe int
 	err := db.DB.QueryRow(`
@@ -85,9 +80,8 @@ func CrearActividad(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error al validar usuario-proyecto", http.StatusInternalServerError)
 		return
 	}
-	// --- FIN VALIDACIÓN ---
 
-	// Si la validación pasa, insertamos
+	// Si la validacion pasa, insertamos
 	stmt, err := db.DB.Prepare(`
         INSERT INTO actividades_por_proyecto 
         (proyecto_id, actividad_id, implemento_id, usuario_id, recurso_humano, observaciones, costo) 
@@ -131,7 +125,6 @@ func ActualizarActividad(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// --- VALIDACIÓN CLAVE (igual que en Crear) ---
 	var existe int
 	err = db.DB.QueryRow(`
         SELECT 1 FROM usuarios_proyectos 
@@ -146,7 +139,6 @@ func ActualizarActividad(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error al validar usuario-proyecto", http.StatusInternalServerError)
 		return
 	}
-	// --- FIN VALIDACIÓN ---
 
 	_, err = db.DB.Exec(`
         UPDATE actividades_por_proyecto 

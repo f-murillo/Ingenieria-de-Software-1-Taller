@@ -8,21 +8,24 @@ import (
 )
 
 func TestInicializarEnMemoria(t *testing.T) {
-	// Usamos una base en memoria para no tocar usuarios.db
 	testDB, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
 		t.Fatalf("Error al abrir base en memoria: %v", err)
 	}
 	defer testDB.Close()
 
-	// Reemplazamos la variable global DB por la de prueba
 	DB = testDB
-
-	// Ejecutamos la lógica de inicialización
 	Inicializar()
 
-	// Verificamos que las tablas existan
-	tablas := []string{"usuarios", "proyectos", "usuarios_proyectos"}
+	// Verificamos que todas las tablas existan
+	tablas := []string{
+		"usuarios",
+		"proyectos",
+		"usuarios_proyectos",
+		"equipos_implementos",
+		"labores_agronomicas",
+		"actividades_por_proyecto",
+	}
 	for _, tabla := range tablas {
 		_, err := DB.Query("SELECT * FROM " + tabla + " LIMIT 1")
 		if err != nil {
@@ -30,13 +33,25 @@ func TestInicializarEnMemoria(t *testing.T) {
 		}
 	}
 
-	// Verificamos que se insertaron usuarios de ejemplo
-	var count int
-	err = DB.QueryRow("SELECT COUNT(*) FROM usuarios").Scan(&count)
-	if err != nil {
-		t.Errorf("Error al contar usuarios: %v", err)
+	// Verificamos datos de ejemplo
+	casos := []struct {
+		tabla    string
+		esperado int
+	}{
+		{"usuarios", 3},
+		{"equipos_implementos", 2},
+		{"labores_agronomicas", 2},
+		{"actividades_por_proyecto", 1},
 	}
-	if count != 3 {
-		t.Errorf("Se esperaban 3 usuarios de ejemplo, pero hay %d", count)
+
+	for _, caso := range casos {
+		var count int
+		err := DB.QueryRow("SELECT COUNT(*) FROM " + caso.tabla).Scan(&count)
+		if err != nil {
+			t.Errorf("Error al contar en %s: %v", caso.tabla, err)
+		}
+		if count != caso.esperado {
+			t.Errorf("Se esperaban %d registros en %s, pero hay %d", caso.esperado, caso.tabla, count)
+		}
 	}
 }
