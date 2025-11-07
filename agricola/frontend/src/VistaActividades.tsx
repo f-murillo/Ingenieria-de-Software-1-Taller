@@ -145,6 +145,7 @@ return (
               <div>
                 <label className="block text-sm font-medium text-gray-700">Proyecto</label>
                 <select
+                  data-testid="selec-project"
                   value={form.proyecto_id}
                   onChange={e => {
                     const id = parseInt(e.target.value);
@@ -164,6 +165,7 @@ return (
               <div>
                 <label className="block text-sm font-medium text-gray-700">Labor</label>
                 <select
+                  data-testid="selec-labor"
                   value={form.actividad_id}
                   onChange={e => setForm({ ...form, actividad_id: parseInt(e.target.value) })}
                   required
@@ -179,6 +181,7 @@ return (
               <div>
                 <label className="block text-sm font-medium text-gray-700">Equipo</label>
                 <select
+                  data-testid="selec-equipo"
                   value={form.implemento_id}
                   onChange={e => setForm({ ...form, implemento_id: parseInt(e.target.value) })}
                   required
@@ -194,6 +197,7 @@ return (
               <div>
                 <label className="block text-sm font-medium text-gray-700">Usuario asignado</label>
                 <select
+                  data-testid="selec-usuario"
                   value={form.usuario_id}
                   onChange={e => setForm({ ...form, usuario_id: parseInt(e.target.value) })}
                   required
@@ -210,6 +214,7 @@ return (
               <div>
                 <label className="block text-sm font-medium text-gray-700">Recurso humano</label>
                 <input
+                  data-testid="input-recurso-humano"
                   type="text"
                   value={form.recurso_humano}
                   onChange={e => setForm({ ...form, recurso_humano: e.target.value })}
@@ -221,6 +226,7 @@ return (
               <div>
                 <label className="block text-sm font-medium text-gray-700">Observaciones</label>
                 <textarea
+                  data-testid="textarea-observaciones"
                   value={form.observaciones}
                   onChange={e => setForm({ ...form, observaciones: e.target.value })}
                   className="w-full p-2 border rounded"
@@ -231,6 +237,7 @@ return (
               <div>
                 <label className="block text-sm font-medium text-gray-700">Costo</label>
                 <input
+                  data-testid="number-numero"
                   type="number"
                   value={form.costo}
                   onChange={e => setForm({ ...form, costo: parseFloat(e.target.value) })}
@@ -241,7 +248,9 @@ return (
               </div>
 
               <div className="flex gap-4">
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:cursor-pointer">
+                <button 
+                  data-testid="btn-formulario-actividades"
+                 type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:cursor-pointer">
                   Crear actividad
                 </button>
                 <button
@@ -296,6 +305,7 @@ return (
             <td className="px-4 py-2">{act.costo} Bs</td>
             <td className="px-4 py-2">
               <button
+                data-testid={`btn-eliminar-actividades-${act.id}`}
                 onClick={() => manejarEliminar(act.id)}
                 className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
               >
