@@ -59,6 +59,7 @@ func CrearEquipo(w http.ResponseWriter, r *http.Request) {
 	id, _ := result.LastInsertId()
 	e.ID = int(id)
 	json.NewEncoder(w).Encode(e)
+	_ = LogEvento("Crear equipo", "equipos")
 }
 
 func ActualizarEquipo(w http.ResponseWriter, r *http.Request) {
@@ -85,6 +86,8 @@ func ActualizarEquipo(w http.ResponseWriter, r *http.Request) {
 	}
 	e.ID = id
 	json.NewEncoder(w).Encode(e)
+	_ = LogEvento("Editar equipo", "equipos")
+
 }
 
 func EliminarEquipo(w http.ResponseWriter, r *http.Request) {
@@ -106,4 +109,5 @@ func EliminarEquipo(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"mensaje": "Equipo eliminado correctamente"})
+	_ = LogEvento("Eliminar equipo", "equipos")
 }

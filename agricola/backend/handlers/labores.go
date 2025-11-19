@@ -59,6 +59,7 @@ func CrearLabor(w http.ResponseWriter, r *http.Request) {
 	id, _ := result.LastInsertId()
 	l.ID = int(id)
 	json.NewEncoder(w).Encode(l)
+	_ = LogEvento("Crear labor", "labores")
 }
 
 func ActualizarLabor(w http.ResponseWriter, r *http.Request) {
@@ -86,6 +87,7 @@ func ActualizarLabor(w http.ResponseWriter, r *http.Request) {
 	}
 	l.ID = id
 	json.NewEncoder(w).Encode(l)
+	_ = LogEvento("Editar labor", "labores")
 }
 
 func EliminarLabor(w http.ResponseWriter, r *http.Request) {
@@ -108,4 +110,5 @@ func EliminarLabor(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"mensaje": "Labor eliminada correctamente"})
+	_ = LogEvento("Eliminar labor", "labores")
 }

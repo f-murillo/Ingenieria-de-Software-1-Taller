@@ -6,6 +6,7 @@ import ProjectPanel from './ProjectPanel';
 import VistaActividades from './VistaActividades';
 import VistaLabores from './VistaLabores';
 import VistaEquipos from './VistaEquipos';
+import VistaEventos from './Eventos';
 import type { Usuario } from './api';
 
 
@@ -73,6 +74,11 @@ function App() {
       return <VistaEquipos mostrarToast={mostrarToast} />;
     }
     
+    if (vista === 'eventos' && usuarioAutenticado?.administrador) {
+      return <VistaEventos />;
+    }
+
+
     return <p>Vista no disponible</p>;
   };
 

@@ -1,5 +1,48 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
+export interface LoggerEvento {
+  id: number;
+  evento: string;
+  modulo: string;
+  fecha: string;
+  hora: string;
+}
+
+// Eventos (Logger)
+export async function obtenerEventos(): Promise<LoggerEvento[]> {
+  const res = await fetch(`${API_URL}/api/eventos`);
+  if (!res.ok) throw new Error('Error al obtener eventos');
+  return res.json();
+}
+
+export async function crearEvento(evento: Omit<LoggerEvento, "id">): Promise<LoggerEvento> {
+  const res = await fetch(`${API_URL}/api/eventos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(evento),
+  });
+  if (!res.ok) throw new Error('Error al crear evento');
+  return res.json();
+}
+
+export async function actualizarEvento(id: number, evento: LoggerEvento): Promise<LoggerEvento> {
+  const res = await fetch(`${API_URL}/api/eventos/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(evento),
+  });
+  if (!res.ok) throw new Error('Error al actualizar evento');
+  return res.json();
+}
+
+export async function eliminarEvento(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/api/eventos/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('Error al eliminar evento');
+}
+
+
 // Interfaces
 export interface Usuario {
   id: number;

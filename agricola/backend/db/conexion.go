@@ -84,7 +84,7 @@ func Inicializar() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	//tabla de actividades por proyecto
 	_, err = DB.Exec(`
     CREATE TABLE IF NOT EXISTS actividades_por_proyecto (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,6 +101,22 @@ func Inicializar() {
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     );
 `)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//tabla de logger de eventos
+	_, err = DB.Exec(`
+	CREATE TABLE IF NOT EXISTS logger_eventos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    evento TEXT NOT NULL,         
+    modulo TEXT NOT NULL,         
+    fecha TEXT NOT NULL,          
+    hora TEXT NOT NULL            
+	);
+	
+`)
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -133,19 +149,6 @@ func Inicializar() {
 			log.Fatal(err)
 		}
 	}
-
-	// Actividad de ejemplo (si la tabla está vacía)
-	//	var countActividades int
-	//	DB.QueryRow("SELECT COUNT(*) FROM actividades_por_proyecto").Scan(&countActividades)
-	//	if countActividades == 0 {
-	//		_, err = DB.Exec(`
-	//        INSERT INTO actividades_por_proyecto (proyecto_id, actividad_id, implemento_id, usuario_id, recurso_humano, observaciones, costo)
-	//        VALUES (1, 1, 1, 1, '3 jornaleros', 'Sin observaciones', 100.0);
-	//    `)
-	//		if err != nil {
-	//			log.Fatal(err)
-	//		}
-	//	}
 
 	// Usuarios de ejemplo (si la tabla esta vacia)
 	var countUsuarios int

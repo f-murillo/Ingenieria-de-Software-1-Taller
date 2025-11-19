@@ -202,6 +202,20 @@ describe('Equipos', () => {
     cy.contains('Equipo eliminado correctamente').should('be.visible')
     
   })
-  
+})
+
+describe('Eventos', () => {
+  it('Eventos', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-eventos"]').click()
+    cy.get('[data-testid="input-buscar-eventos"]').type('evento de prueba')
+    cy.get('[data-testid="input-buscar-eventos"]').clear()
+    cy.get('[data-testid="btn-eliminar-evento-1"]').click()
+    cy.contains('Evento eliminado correctamente').should('be.visible')
+  })
+
 
 })

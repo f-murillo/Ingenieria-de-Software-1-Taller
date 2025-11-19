@@ -104,6 +104,7 @@ func CrearActividad(w http.ResponseWriter, r *http.Request) {
 	id, _ := result.LastInsertId()
 	act.ID = int(id)
 	json.NewEncoder(w).Encode(act)
+	_ = LogEvento("Crear actividad", "actividades")
 }
 
 func ActualizarActividad(w http.ResponseWriter, r *http.Request) {
@@ -185,4 +186,5 @@ func EliminarActividad(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"mensaje": "Actividad eliminada correctamente"})
+	_ = LogEvento("Eliminar actividad", "actividades")
 }

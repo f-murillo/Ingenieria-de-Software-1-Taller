@@ -307,7 +307,7 @@ return (
               <button
                 data-testid={`btn-eliminar-actividades-${act.id}`}
                 onClick={() => manejarEliminar(act.id)}
-                className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                className="bg-[#7a99c7] text-white px-3 py-1 rounded hover:bg-[#6785ac]"
               >
                 Eliminar
               </button>

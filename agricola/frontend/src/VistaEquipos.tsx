@@ -85,7 +85,7 @@ export default function VistaEquipos({ mostrarToast }: Props) {
         <button
           data-testid="btn-agregar-equipos"
           onClick={manejarCrear}
-          className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
+          className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
         >
           Crear
         </button>
@@ -146,14 +146,15 @@ export default function VistaEquipos({ mostrarToast }: Props) {
                         setEditandoId(e.id);
                         setTituloEditado(e.titulo);
                       }}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                      className="bg-[#80aeab] text-white px-3 py-1 rounded hover:bg-[#6b9996]"
+
                     >
                       Editar
                     </button>
                     <button
                       data-testid={`btn-eliminar-equipos-${e.id}`}
                       onClick={() => manejarEliminar(e.id)}
-                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                      className="bg-[#7a99c7] text-white px-3 py-1 rounded hover:bg-[#6785ac]"
                     >
                       Eliminar
                     </button>

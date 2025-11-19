@@ -100,6 +100,7 @@ func CrearProyecto(w http.ResponseWriter, r *http.Request) {
 	id, _ := result.LastInsertId()
 	p.ID = int(id)
 	json.NewEncoder(w).Encode(p)
+	_ = LogEvento("Crear proyecto", "proyectos")
 }
 
 func ObtenerUsuariosPorProyecto(w http.ResponseWriter, r *http.Request) {
@@ -302,6 +303,7 @@ func ActualizarProyecto(w http.ResponseWriter, r *http.Request) {
 		FechaCierre: datos.FechaCierre,
 	}
 	json.NewEncoder(w).Encode(proyecto)
+	_ = LogEvento("Editar proyecto", "proyectos")
 }
 
 func ActualizarCostoProyecto(proyectoID int) error {

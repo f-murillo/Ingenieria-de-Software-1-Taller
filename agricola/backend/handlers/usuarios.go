@@ -69,6 +69,7 @@ func CrearUsuario(w http.ResponseWriter, r *http.Request) {
 	id, _ := result.LastInsertId()
 	u.ID = int(id)
 	json.NewEncoder(w).Encode(u)
+	_ = LogEvento("Crear usuario", "usuarios")
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -140,4 +141,5 @@ func ActualizarRolUsuario(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{"mensaje": "Rol actualizado correctamente"})
+	_ = LogEvento("Editar rol usuario", "usuarios")
 }
