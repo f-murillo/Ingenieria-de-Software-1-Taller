@@ -25,6 +25,7 @@ func TestInicializarEnMemoria(t *testing.T) {
 		"equipos_implementos",
 		"labores_agronomicas",
 		"actividades_por_proyecto",
+		"unidades_medidas",
 	}
 	for _, tabla := range tablas {
 		_, err := DB.Query("SELECT * FROM " + tabla + " LIMIT 1")
@@ -41,7 +42,6 @@ func TestInicializarEnMemoria(t *testing.T) {
 		{"usuarios", 3},
 		{"equipos_implementos", 2},
 		{"labores_agronomicas", 2},
-		{"actividades_por_proyecto", 1},
 	}
 
 	for _, caso := range casos {

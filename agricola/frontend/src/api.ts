@@ -42,6 +42,47 @@ export async function eliminarEvento(id: number): Promise<void> {
   if (!res.ok) throw new Error('Error al eliminar evento');
 }
 
+// Interfaz para las unidades
+export interface UnidadMedida {
+  id: number;
+  dimension: number;
+  unidad: string;
+}
+
+export async function obtenerUnidades(): Promise<UnidadMedida[]> {
+  const res = await fetch(`${API_URL}/api/unidades`);
+  if (!res.ok) throw new Error("Error al obtener unidades");
+  return res.json();
+}
+
+export async function crearUnidad(unidad: Omit<UnidadMedida, "id">): Promise<UnidadMedida> {
+  const res = await fetch(`${API_URL}/api/unidades`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(unidad),
+  });
+  if (!res.ok) throw new Error("Error al crear unidad");
+  return res.json();
+}
+
+export async function actualizarUnidad(id: number, unidad: Omit<UnidadMedida, "id">): Promise<UnidadMedida> {
+  const res = await fetch(`${API_URL}/api/unidades/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(unidad),
+  });
+  if (!res.ok) throw new Error("Error al actualizar unidad");
+  return res.json();
+}
+
+export async function eliminarUnidad(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/api/unidades/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Error al eliminar unidad");
+}
+
+
 
 // Interfaces
 export interface Usuario {

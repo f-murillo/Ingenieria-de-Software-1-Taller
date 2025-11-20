@@ -114,11 +114,6 @@ describe('Proyectos', () => {
     cy.contains('Nuevo nombre del proyecto').should('be.visible')
 
   })
-
-
-
-
-
 })
 
 describe('Actividades', () => {
@@ -216,6 +211,40 @@ describe('Eventos', () => {
     cy.get('[data-testid="btn-eliminar-evento-1"]').click()
     cy.contains('Evento eliminado correctamente').should('be.visible')
   })
-
-
 })
+
+describe('Unidades de medida', () => {
+  it('Agrega una nueva unidad', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-unidades"]').click()
+    cy.get('[data-testid="input-dimension"]').type('8')
+    cy.get('[data-testid="input-unidad"]').type('Pulgadas')
+    cy.get('[data-testid="btn-agregar-unidad"]').click()
+    cy.contains('Unidad creada correctamente').should('be.visible')
+    cy.contains('8').should('be.visible')
+    cy.contains('Pulgadas').should('be.visible')
+  })
+
+  it('Botones funcionales', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-unidades"]').click()
+    cy.get('[data-testid="btn-editar-unidad-1"]').click()
+    cy.get('[data-testid="input-dimension"]').clear().type('10')
+    cy.get('[data-testid="input-unidad"]').clear().type('Centímetros')
+    cy.get('[data-testid="btn-guardar-unidad-1"]').click()
+    cy.contains('Unidad actualizada correctamente').should('be.visible')
+    cy.get('[data-testid="btn-editar-unidad-1"]').click()
+    cy.get('[data-testid="input-dimension"]').clear().type('10')
+    cy.get('[data-testid="input-unidad"]').clear().type('Centímetros')
+    cy.get('[data-testid="cancelar-unidad-1"]').click()
+    cy.get('[data-testid="btn-eliminar-unidad-1"]').click()
+    cy.contains('Unidad eliminada correctamente').should('be.visible')
+  })
+})
+

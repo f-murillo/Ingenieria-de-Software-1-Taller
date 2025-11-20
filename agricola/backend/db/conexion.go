@@ -100,7 +100,7 @@ func Inicializar() {
         FOREIGN KEY (implemento_id) REFERENCES equipos_implementos(id),
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     );
-`)
+	`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -115,7 +115,20 @@ func Inicializar() {
     hora TEXT NOT NULL            
 	);
 	
-`)
+	`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// tabla de unidades de medida
+	_, err = DB.Exec(`
+    CREATE TABLE IF NOT EXISTS unidades_medidas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        dimension REAL NOT NULL,
+        unidad TEXT NOT NULL
+    );
+	`)
 
 	if err != nil {
 		log.Fatal(err)

@@ -212,8 +212,6 @@ func main() {
 	})
 
 	// Logger de eventos
-
-	// Logger de eventos
 	http.HandleFunc("/api/eventos", func(w http.ResponseWriter, r *http.Request) {
 		habilitarCORS(w)
 		if r.Method == http.MethodOptions {
@@ -240,6 +238,39 @@ func main() {
 			handlers.ActualizarEvento(w, r)
 		case http.MethodDelete:
 			handlers.EliminarEvento(w, r)
+		default:
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// Unidades de medida
+	http.HandleFunc("/api/unidades", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		switch r.Method {
+		case http.MethodGet:
+			handlers.ObtenerUnidades(w, r)
+		case http.MethodPost:
+			handlers.CrearUnidad(w, r)
+		default:
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/api/unidades/", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		switch r.Method {
+		case http.MethodPut:
+			handlers.ActualizarUnidad(w, r)
+		case http.MethodDelete:
+			handlers.EliminarUnidad(w, r)
 		default:
 			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
 		}

@@ -7,6 +7,7 @@ import VistaActividades from './VistaActividades';
 import VistaLabores from './VistaLabores';
 import VistaEquipos from './VistaEquipos';
 import VistaEventos from './Eventos';
+import VistaUnidades from './VistaUnidades';
 import type { Usuario } from './api';
 
 
@@ -78,6 +79,9 @@ function App() {
       return <VistaEventos />;
     }
 
+    if (vista === 'unidades' && usuarioAutenticado?.administrador) {
+      return <VistaUnidades mostrarToast={mostrarToast}/>;
+    }
 
     return <p>Vista no disponible</p>;
   };

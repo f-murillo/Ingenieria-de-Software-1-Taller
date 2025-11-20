@@ -61,6 +61,13 @@ export default function Panel({ administrador, onSeleccion, onLogout, mensaje }:
           >
             Logger de eventos
           </button>
+          <button
+            data-testid="btn-unidades"
+            onClick={() => onSeleccion('unidades')}
+            className="block w-full text-left hover:underline hover:cursor-pointer">
+            Gestionar unidades
+          </button>
+
         </>
       ) : (
         <button
