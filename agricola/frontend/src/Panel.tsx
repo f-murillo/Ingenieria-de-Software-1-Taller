@@ -68,6 +68,13 @@ export default function Panel({ administrador, onSeleccion, onLogout, mensaje }:
             Gestionar unidades
           </button>
 
+          <button
+           data-testid="btn-acciones"
+            onClick={() => onSeleccion("formulario-actividades")}
+            className="block w-full text-left hover:underline hover:cursor-pointer">
+            Plan de Acción
+          </button>
+
         </>
       ) : (
         <button

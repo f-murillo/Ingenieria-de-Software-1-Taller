@@ -62,15 +62,22 @@ export default function VistaActividades({ usuario, mostrarToast }: Props) {
     }
   }
 
-  async function cargarUsuariosDelProyecto(id: number) {
-    try {
-      const usuarios = await obtenerUsuariosPorProyecto(id);
-      setUsuariosProyecto(usuarios);
-    } catch (error) {
-      console.error('Error al cargar usuarios:', error);
-      mostrarToast('Error al cargar usuarios del proyecto');
-    }
+async function cargarUsuariosDelProyecto(id: number) {
+  if (!id) {
+    // 👇 si se selecciona el default, limpiar usuarios
+    setUsuariosProyecto([]);
+    return;
   }
+  try {
+    const usuarios = await obtenerUsuariosPorProyecto(id);
+    setUsuariosProyecto(usuarios || []); // 👈 asegura que nunca sea null
+  } catch (error) {
+    console.error('Error al cargar usuarios:', error);
+    mostrarToast('Error al cargar usuarios del proyecto');
+    setUsuariosProyecto([]); // 👈 fallback seguro
+  }
+}
+
 
   async function manejarCrear() {
     try {

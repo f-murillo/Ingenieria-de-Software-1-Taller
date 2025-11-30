@@ -22,6 +22,9 @@ func setupTestDB(t *testing.T) {
 		t.Fatalf("Error al abrir base en memoria: %v", err)
 	}
 	db.Inicializar()
+
+	// 👇 limpiar tabla unidades para que quede vacía
+	db.DB.Exec("DELETE FROM unidades_medidas")
 }
 
 func TestCrearYObtenerUnidad(t *testing.T) {

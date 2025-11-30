@@ -8,6 +8,7 @@ import VistaLabores from './VistaLabores';
 import VistaEquipos from './VistaEquipos';
 import VistaEventos from './Eventos';
 import VistaUnidades from './VistaUnidades';
+import FormularioActividades from "./Actividades_periodo";
 import type { Usuario } from './api';
 
 
@@ -81,6 +82,11 @@ function App() {
 
     if (vista === 'unidades' && usuarioAutenticado?.administrador) {
       return <VistaUnidades mostrarToast={mostrarToast}/>;
+    }
+
+    if (vista === 'formulario-actividades' && usuarioAutenticado?.administrador) {
+     
+      return <FormularioActividades />;
     }
 
     return <p>Vista no disponible</p>;

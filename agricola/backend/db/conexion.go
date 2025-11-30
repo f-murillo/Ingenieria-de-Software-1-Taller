@@ -134,6 +134,57 @@ func Inicializar() {
 		log.Fatal(err)
 	}
 
+	// tabla de actividades detalle tiempo
+	_, err = DB.Exec(`
+	CREATE TABLE IF NOT EXISTS actividades_periodo (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+	actividad TEXT NOT NULL,
+    accion TEXT NOT NULL,
+    fecha_inicio TEXT,
+    fecha_cierre TEXT,
+    cantidad_horas INTEGER,
+    responsable TEXT,
+    monto REAL
+    
+);
+	`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	// tabla de actividades detalle cantidad
+	_, err = DB.Exec(`
+	CREATE TABLE IF NOT EXISTS actividades_cantidad (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    periodo_id INTEGER NOT NULL,
+    cantidad INTEGER,
+	costo REAL,
+    monto REAL,
+    FOREIGN KEY (periodo_id) REFERENCES actividades_periodo(id)
+);
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// tabla de actividades detalle categoria
+	_, err = DB.Exec(`
+	CREATE TABLE IF NOT EXISTS actividades_categoria (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    periodo_id INTEGER NOT NULL,
+    categoria TEXT,
+    descripcion TEXT,
+    cantidad INTEGER,
+    medida TEXT,
+    monto REAL,
+    FOREIGN KEY (periodo_id) REFERENCES actividades_periodo(id)
+);
+	`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Equipos e implementos de ejemplo (si la tabla está vacía)
 	var countEquipos int
 	DB.QueryRow("SELECT COUNT(*) FROM equipos_implementos").Scan(&countEquipos)

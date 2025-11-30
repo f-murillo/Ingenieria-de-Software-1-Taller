@@ -198,20 +198,23 @@ describe('Equipos', () => {
     
   })
 })
-
 describe('Eventos', () => {
-  it('Eventos', () => {
+  beforeEach(() => {
     cy.visit('http://localhost:5173/')
     cy.get('[data-testid="input-usuario"]').type('akoto')
     cy.get('[data-testid="input-contraseña"]').type('pass123')
     cy.get('[data-testid="button-submit"]').click()
     cy.get('[data-testid="btn-eventos"]').click()
-    cy.get('[data-testid="input-buscar-eventos"]').type('evento de prueba')
-    cy.get('[data-testid="input-buscar-eventos"]').clear()
-    cy.get('[data-testid="btn-eliminar-evento-1"]').click()
-    cy.contains('Evento eliminado correctamente').should('be.visible')
   })
+
+  it('Busca por texto (evento o módulo)', () => {
+    cy.get('[data-testid="input-buscar-eventos"]').type('eliminar')
+    cy.contains('Eliminar equipo').should('be.visible')
+    
+  })
+
 })
+
 
 describe('Unidades de medida', () => {
   it('Agrega una nueva unidad', () => {
@@ -248,3 +251,68 @@ describe('Unidades de medida', () => {
   })
 })
 
+describe('Acciones', () => {
+  it('Crea una nueva actividad', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-acciones"]').click()
+    cy.get('[data-testid="btn-nueva-actividad"]').click()
+
+    // llenar formulario de nueva actividad
+    cy.get('[data-testid="input-actividad"]').type('Siembra de maíz')
+    cy.get('[data-testid="select-accion"]').select('Aplicación de fertilizantes')
+    cy.get('[data-testid="input-fecha-inicio"]').type('2025-11-01')
+    cy.get('[data-testid="input-fecha-cierre"]').type('2025-11-10')
+    cy.get('[data-testid="select-responsable"]').select('Ana Koto')
+    cy.get('[data-testid="input-cantidad"]').type('5')
+    cy.get('[data-testid="input-costo"]').type('100')
+    cy.get('[data-testid="select-categoria"]').select('Insumos')
+    cy.get('[data-testid="input-descripcion"]').type('Fertilizante NPK 20-20-20')
+    cy.get('[data-testid="input-cantidad-accion"]').type('50')
+ //   cy.get('[data-testid="select-medida"]').select('Pulgadas')
+    cy.get('[data-testid="input-monto"]').type('500')
+    cy.get('[data-testid="btn-agregar-actividad"]').click()
+
+    // verificar creación
+    cy.contains('Accion Guardada Exitosamente').should('be.visible')
+    cy.contains('Siembra de maíz').should('be.visible')
+    cy.contains('Aplicación de fertilizantes').should('be.visible')
+  })
+
+  it('Buscador filtra actividades', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-acciones"]').click()
+
+    // escribir en buscador
+    cy.get('[data-testid="input-buscar-acciones"]').type('Siembra')
+    cy.contains('Siembra').should('be.visible')
+
+    // verificar que otras actividades no aparezcan
+    cy.contains('Labranza').should('not.exist')
+  })  
+
+  it('Botones Editar y Eliminar funcionan', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-acciones"]').click()
+
+    // editar actividad con id 1
+    cy.get('[data-testid="btn-editar-actividad-1"]').click()
+    cy.get('[data-testid="input-actividad-1"]').clear().type('Siembra de arroz')
+    cy.get('[data-testid="btn-guardar-actividad-1"]').click()
+    cy.contains('Actividad actualizada correctamente').should('be.visible')
+
+    // eliminar actividad
+    cy.get('[data-testid="btn-eliminar-actividad-1"]').click()
+    cy.contains('Actividad eliminada correctamente').should('be.visible')
+  })
+
+
+})

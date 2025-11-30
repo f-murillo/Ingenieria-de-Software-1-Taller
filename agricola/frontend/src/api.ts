@@ -1,4 +1,120 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
+
+// Tabla principal: actividades_periodo
+export interface ActividadPeriodo {
+  id: number;
+  actividad: string;       
+  accion: string;
+  fecha_inicio: string;
+  fecha_cierre: string;
+  cantidad_horas: number;
+  responsable: string;
+  monto: number;
+}
+
+// Tabla detalle: actividades_cantidad
+export interface ActividadCantidad {
+  id: number;
+  periodo_id: number;      
+  cantidad: number;
+  costo: number;
+  monto: number;
+}
+
+// Tabla detalle: actividades_categoria
+export interface ActividadCategoria {
+  id: number;
+  periodo_id: number;      
+  categoria: string;
+  descripcion: string;
+  cantidad: number;
+  medida: string;
+  monto: number;
+}
+
+// api.ts
+
+// Eliminar periodo
+export async function eliminarPeriodo(id: number) {
+  const response = await fetch(`${API_URL}/api/actividades_periodo/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al eliminar el periodo");
+  }
+
+  return true; // puedes devolver un booleano o nada
+}
+// Actualizar periodo
+
+export async function actualizarPeriodo(periodo: any) {
+  const response = await fetch(`${API_URL}/api/actividades_periodo/${periodo.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(periodo),
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al actualizar el periodo");
+  }
+
+  return await response.json();
+}
+
+// Obtener periodos
+export async function obtenerActividadesPeriodo(): Promise<ActividadPeriodo[]> {
+  const res = await fetch(`${API_URL}/api/actividades_periodo`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error("Error al obtener periodos");
+  const data = await res.json();
+  return Array.isArray(data) ? data : []; // 👈 nunca devuelve null
+}
+
+
+// Crear periodo
+export async function crearActividadPeriodo(
+  periodo: Omit<ActividadPeriodo, "id">
+): Promise<{ mensaje: string; id: number }> {
+  const res = await fetch(`${API_URL}/api/actividades_periodo`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(periodo),
+  });
+  if (!res.ok) throw new Error("Error al crear periodo");
+  return res.json(); // aquí recibes { mensaje, id }
+}
+
+// Crear cantidad
+export async function crearActividadCantidad(
+  cantidad: Omit<ActividadCantidad, "id">
+): Promise<void> {
+  const res = await fetch(`${API_URL}/api/actividades_cantidad`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cantidad),
+  });
+  if (!res.ok) throw new Error("Error al crear cantidad");
+}
+
+// Crear categoría
+export async function crearActividadCategoria(
+  categoria: Omit<ActividadCategoria, "id">
+): Promise<void> {
+  const res = await fetch(`${API_URL}/api/actividades_categoria`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(categoria),
+  });
+  if (!res.ok) throw new Error("Error al crear categoría");
+}
+
+// Interfaz para los eventos del logger
 
 export interface LoggerEvento {
   id: number;
@@ -52,8 +168,10 @@ export interface UnidadMedida {
 export async function obtenerUnidades(): Promise<UnidadMedida[]> {
   const res = await fetch(`${API_URL}/api/unidades`);
   if (!res.ok) throw new Error("Error al obtener unidades");
-  return res.json();
+  const data = await res.json();
+  return Array.isArray(data) ? data : []; // 👈 nunca será null
 }
+
 
 export async function crearUnidad(unidad: Omit<UnidadMedida, "id">): Promise<UnidadMedida> {
   const res = await fetch(`${API_URL}/api/unidades`, {

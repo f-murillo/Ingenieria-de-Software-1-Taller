@@ -276,6 +276,71 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/api/actividades_periodo", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodPost:
+			handlers.CrearActividadPeriodo(w, r)
+		case http.MethodGet:
+			handlers.ObtenerActividadesPeriodo(w, r)
+		default:
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/api/actividades_periodo/", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method == http.MethodPut {
+			handlers.ActualizarActividadPeriodo(w, r)
+			return
+		}
+
+		if r.Method == http.MethodDelete {
+			handlers.EliminarActividadPeriodo(w, r)
+			return
+		}
+
+		http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+	})
+
+	http.HandleFunc("/api/actividades_cantidad", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		if r.Method == http.MethodPost {
+			handlers.CrearActividadCantidad(w, r)
+		} else {
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/api/actividades_categoria", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		if r.Method == http.MethodPost {
+			handlers.CrearActividadCategoria(w, r)
+		} else {
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
+	})
+
 	//Iniciar servidor
 	log.Println("Servidor escuchando en http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
