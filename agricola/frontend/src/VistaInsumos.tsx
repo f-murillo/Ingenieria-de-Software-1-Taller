@@ -29,16 +29,17 @@ export default function VistaInsumos() {
   useEffect(() => {
     Promise.all([obtenerTodosActividadesCategoria(), obtenerActividadesPeriodo()])
       .then(([insumosData, periodosData]) => {
-        setInsumos(insumosData);
-        setPeriodos(periodosData);
+        setInsumos(Array.isArray(insumosData) ? insumosData : []);
+        setPeriodos(Array.isArray(periodosData) ? periodosData : []);
       })
       .catch(console.error);
   }, []);
 
   const recargar = async () => {
     const lista = await obtenerTodosActividadesCategoria();
-    setInsumos(lista);
+    setInsumos(Array.isArray(lista) ? lista : []);
   };
+
 
   const nombreActividad = (id: number) => {
     const act = periodos.find((p) => p.id === id);

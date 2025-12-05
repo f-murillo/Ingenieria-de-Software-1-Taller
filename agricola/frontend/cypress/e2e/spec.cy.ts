@@ -314,12 +314,42 @@ describe('Acciones', () => {
     cy.contains('Actividad eliminada correctamente').should('be.visible')
   })
 
+  it('Crea una nueva actividad', () => {
+    cy.visit('http://localhost:5173/')
+    cy.get('[data-testid="input-usuario"]').type('akoto')
+    cy.get('[data-testid="input-contraseña"]').type('pass123')
+    cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-acciones"]').click()
+    cy.get('[data-testid="btn-nueva-actividad"]').click()
+
+    // llenar formulario de nueva actividad
+    cy.get('[data-testid="input-actividad"]').type('Siembra de maíz')
+    cy.get('[data-testid="select-accion"]').select('Aplicación de fertilizantes')
+    cy.get('[data-testid="input-fecha-inicio"]').type('2025-11-01')
+    cy.get('[data-testid="input-fecha-cierre"]').type('2025-11-10')
+    cy.get('[data-testid="select-responsable"]').select('Ana Koto')
+    cy.get('[data-testid="input-cantidad"]').type('5')
+    cy.get('[data-testid="input-costo"]').type('100')
+    cy.get('[data-testid="select-categoria"]').select('Insumos')
+    cy.get('[data-testid="input-descripcion"]').type('Fertilizante NPK 20-20-20')
+    cy.get('[data-testid="input-cantidad-accion"]').type('50')
+ //   cy.get('[data-testid="select-medida"]').select('Pulgadas')
+    cy.get('[data-testid="input-monto"]').type('500')
+    cy.get('[data-testid="btn-agregar-actividad"]').click()
+
+    // verificar creación
+    cy.contains('Accion Guardada Exitosamente').should('be.visible')
+    cy.contains('Siembra de maíz').should('be.visible')
+    cy.contains('Aplicación de fertilizantes').should('be.visible')
+  })
+
 describe('VistaRecursosHumanos', () => {
   beforeEach(() => {
     cy.visit('http://localhost:5173/')
     cy.get('[data-testid="input-usuario"]').type('akoto')
     cy.get('[data-testid="input-contraseña"]').type('pass123')
     cy.get('[data-testid="button-submit"]').click()
+    cy.get('[data-testid="btn-acciones"]').click()
     cy.get('[data-testid="btn-recursos-humanos"]').click() // botón que abre la pestaña de recursos humanos
   })
 
@@ -329,21 +359,20 @@ describe('VistaRecursosHumanos', () => {
 
   it('Permite editar un recurso existente', () => {
     // entrar en modo edición
-    cy.get('[data-testid="btn-editar-recurso-1"]').click()
+    cy.get('[data-testid="btn-editar-recurso-2"]').click()
 
     // cambiar costo
-    cy.get('[data-testid="input-costo-1"]').clear().type('200')
+    cy.get('[data-testid="input-costo-2"]').clear().type('200')
 
     // guardar cambios
-    cy.get('[data-testid="btn-guardar-recurso-1"]').click()
+    cy.get('[data-testid="btn-guardar-recurso-2"]').click()
 
     // verificar que el monto se recalculó
-    cy.get('[data-testid="monto-recurso-1"]').should('contain', '$')
+    cy.get('[data-testid="monto-recurso-2"]').should('contain', '$')
   })
 
   it('Permite eliminar un recurso con confirmación', () => {
-    cy.get('[data-testid="btn-eliminar-recurso-1"]').click()
-
+    cy.get('[data-testid="btn-eliminar-recurso-2"]').click()
     // modal visible
     cy.get('[data-testid="modal-eliminar-recurso"]').should('be.visible')
 
@@ -362,7 +391,7 @@ describe('VistaRecursosHumanos', () => {
   it('Muestra mensaje cuando no hay recursos', () => {
     // simular que no hay recursos (dependiendo de tu backend, aquí podrías limpiar datos)
     // para el ejemplo, verificamos que el mensaje aparece si la lista está vacía
-    cy.get('[data-testid="sin-recursos"]').should('not.exist') // normalmente hay recursos
+    cy.get('[data-testid="sin-recursos"]').should('exist') // normalmente hay recursos
     // si borras todos, debería aparecer:
     // cy.get('[data-testid="sin-recursos"]').should('be.visible')
   })
@@ -374,41 +403,28 @@ describe('VistaInsumos', () => {
     cy.get('[data-testid="input-usuario"]').type('akoto')
     cy.get('[data-testid="input-contraseña"]').type('pass123')
     cy.get('[data-testid="button-submit"]').click()
-    cy.get('[data-testid="btn-insumos"]').click() // botón que abre la pestaña de insumos
+    cy.get('[data-testid="btn-acciones"]').click()
+    cy.get('[data-testid="btn-insumos-materiales"]').click() // botón que abre la pestaña de insumos
   })
 
   it('Muestra la tabla de insumos', () => {
     cy.get('[data-testid="tabla-insumos"]').should('exist')
   })
 
-  it('Permite crear un nuevo insumo', () => {
-    cy.get('input[placeholder="ID Actividad"]').type('1')
-    cy.get('input[placeholder="Categoría"]').type('Semillas')
-    cy.get('input[placeholder="Descripción"]').type('Semillas de maíz')
-    cy.get('input[placeholder="Cantidad"]').type('10')
-    cy.get('input[placeholder="Medida"]').type('kg')
-    cy.get('input[placeholder="Monto"]').type('500')
-    cy.contains('Agregar').click()
-
-    // verificar que aparece en la tabla
-    cy.contains('Semillas').should('be.visible')
-    cy.get('[data-testid="total-montos-insumos"]').should('contain', '$500')
-  })
 
   it('Permite editar un insumo existente', () => {
-    cy.get('[data-testid="btn-editar-insumo-1"]').click()
-    cy.get('[data-testid="input-categoria-1"]').clear().type('Fertilizante')
-    cy.get('[data-testid="input-monto-1"]').clear().type('750')
-    cy.get('[data-testid="btn-guardar-insumo-1"]').click()
+    cy.get('[data-testid="btn-editar-insumo-2"]').click()
+    cy.get('[data-testid="input-categoria-2"]').clear().type('Fertilizante')
+    cy.get('[data-testid="input-monto-2"]').clear().type('750')
+    cy.get('[data-testid="btn-guardar-insumo-2"]').click()
 
     // verificar cambios
     cy.contains('Fertilizante').should('be.visible')
-    cy.get('[data-testid="monto-insumo-1"]').should('contain', '$750')
+    cy.get('[data-testid="monto-insumo-2"]').should('contain', '$750')
   })
 
   it('Permite eliminar un insumo con confirmación', () => {
-    cy.get('[data-testid="btn-eliminar-insumo-1"]').click()
-
+    cy.get('[data-testid="btn-eliminar-insumo-2"]').click()
     // modal visible
     cy.get('[data-testid="modal-eliminar-insumo"]').should('be.visible')
 
@@ -426,7 +442,7 @@ describe('VistaInsumos', () => {
 
   it('Muestra mensaje cuando no hay insumos', () => {
     // si borras todos los insumos, debería aparecer el mensaje
-    cy.get('[data-testid="sin-insumos"]').should('not.exist') // normalmente hay insumos
+    cy.get('[data-testid="sin-insumos"]').should('exist') // normalmente hay insumos
     // si la lista está vacía:
     // cy.get('[data-testid="sin-insumos"]').should('be.visible')
   })

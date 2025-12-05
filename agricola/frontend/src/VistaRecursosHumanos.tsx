@@ -26,17 +26,43 @@ export default function VistaRecursosHumanos() {
 
   useEffect(() => {
     Promise.all([obtenerTodosRecursosHumanos(), obtenerActividadesPeriodo()])
-      .then(([recursosData, periodosData]) => {
-        setRecursos(recursosData);
-        setPeriodos(periodosData);
-      })
-      .catch(console.error);
+    .then(([recursosData, periodosData]) => {
+      setRecursos(Array.isArray(recursosData) ? recursosData : []);
+      setPeriodos(Array.isArray(periodosData) ? periodosData : []);
+  })
+  .catch(console.error);
+
   }, []);
 
   const recargar = async () => {
     const lista = await obtenerTodosRecursosHumanos();
-    setRecursos(lista);
+    setRecursos(Array.isArray(lista) ? lista : []);
   };
+
+
+  useEffect(() => {
+    Promise.all([obtenerTodosRecursosHumanos(), obtenerActividadesPeriodo()])
+      .then(([recursosData, periodosData]) => {
+        setRecursos(Array.isArray(recursosData) ? recursosData : []);
+        setPeriodos(Array.isArray(periodosData) ? periodosData : []);
+      })
+      .catch(console.error);
+  }, []);
+
+
+
+  {Array.isArray(recursos) && recursos.map(r => (
+  <tr key={r.id}>
+    <td>{r.periodo_id}</td>
+    <td>{r.cantidad}</td>
+    <td>{r.costo}</td>
+    <td>{r.monto}</td>
+  </tr>
+))}
+
+  
+
+
 
   const nombreActividad = (id: number) => {
     const act = periodos.find((p) => p.id === id);
@@ -92,7 +118,9 @@ export default function VistaRecursosHumanos() {
     setIdAEliminar(null);
   };
 
-  const totalMontos = recursos.reduce((sum, i) => sum + i.monto, 0);
+  const totalMontos = Array.isArray(recursos)
+  ? recursos.reduce((sum, i) => sum + (i.monto || 0), 0)
+  : 0;
 
   return (
     <div>

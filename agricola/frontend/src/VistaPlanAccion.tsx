@@ -14,18 +14,21 @@ export default function VistaPlanAccion() {
       {/* Barra de subpestañas */}
       <div className="flex space-x-4 border-b mb-6">
         <button
+          data-testid="btn-acciones"
           className={`pb-2 ${subvista === "actividades" ? "border-b-2 border-blue-500 font-semibold" : ""} hover:cursor-pointer`}
           onClick={() => setSubvista("actividades")}
         >
           Actividades
         </button>
         <button
+          data-testid="btn-recursos-humanos"
           className={`pb-2 ${subvista === "recursos" ? "border-b-2 border-blue-500 font-semibold" : ""} hover:cursor-pointer`}
           onClick={() => setSubvista("recursos")}
         >
           Recursos Humanos
         </button>
         <button
+          data-testid="btn-insumos-materiales"
           className={`pb-2 ${subvista === "insumos" ? "border-b-2 border-blue-500 font-semibold" : ""} hover:cursor-pointer`}
           onClick={() => setSubvista("insumos")}
         >
