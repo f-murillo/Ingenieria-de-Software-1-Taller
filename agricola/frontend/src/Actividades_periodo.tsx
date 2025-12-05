@@ -12,10 +12,6 @@ import {
 } from "./api";
 import type { ActividadPeriodo, Usuario, LaborAgronomica, UnidadMedida } from "./api";
 
-
-
-
-
 export default function FormularioActividades() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [periodos, setPeriodos] = useState<ActividadPeriodo[]>([]);
@@ -123,13 +119,20 @@ useEffect(() => {
   }, []);
 
 
-  const calcularHoras = (inicio: string, cierre: string): number => {
-    if (!inicio || !cierre) return 0;
-    const fechaInicio = new Date(inicio);
-    const fechaCierre = new Date(cierre);
-    const diffMs = fechaCierre.getTime() - fechaInicio.getTime();
-    if (diffMs <= 0) return 0;
-    return Math.floor(diffMs / (1000 * 60 * 60)); // diferencia en horas
+const calcularHorasLaborables = (inicio: string, cierre: string): number => {
+  if (!inicio || !cierre) return 0;
+  const fechaInicio = new Date(inicio);
+  const fechaCierre = new Date(cierre);
+
+  // diferencia en milisegundos
+  const diffMs = fechaCierre.getTime() - fechaInicio.getTime();
+  if (diffMs <= 0) return 0;
+
+  // diferencia en días (redondeando hacia abajo)
+  const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  // cada día cuenta como 8 horas laborables
+  return diffDias * 8;
 };
 
 
@@ -269,7 +272,7 @@ useEffect(() => {
                       setDatosEditados(prev => ({
                         ...prev!,
                         fecha_inicio: nuevaFecha,
-                        cantidad_horas: calcularHoras(nuevaFecha, prev!.fecha_cierre),
+                        cantidad_horas: calcularHorasLaborables(nuevaFecha, prev!.fecha_cierre),
                       }));
                     }}
                     className="border p-1 w-full"
@@ -289,7 +292,7 @@ useEffect(() => {
                       setDatosEditados(prev => ({
                         ...prev!,
                         fecha_cierre: nuevaFecha,
-                        cantidad_horas: calcularHoras(prev!.fecha_inicio, nuevaFecha),
+                        cantidad_horas: calcularHorasLaborables(prev!.fecha_inicio, nuevaFecha),
                       }));
                     }}
                     className="border p-1 w-full"
@@ -345,7 +348,7 @@ useEffect(() => {
                         setPeriodoEditando(p.id);
                         setDatosEditados({ ...p });
                       }}
-                      className="bg-[#80aeab] text-white px-3 py-1 rounded hover:bg-[#6b9996]"
+                      className="bg-[#80aeab] text-white px-3 py-1 rounded hover:bg-[#6b9996] hover:cursor-pointer"
                     >
                       Editar
                     </button>
@@ -353,7 +356,7 @@ useEffect(() => {
                   <button
                     data-testid={`btn-eliminar-actividad-${p.id}`}
                     onClick={() => handleEliminar(p.id)}   // 👈 ahora usa la función centralizada
-                    className="bg-[#7a99c7] text-white px-3 py-1 rounded hover:bg-[#6785ac]"
+                    className="bg-[#7a99c7] text-white px-3 py-1 rounded hover:bg-[#6785ac] hover:cursor-pointer"
                   >
                     Eliminar
                   </button>
@@ -428,7 +431,7 @@ useEffect(() => {
               setPeriodo(prev => ({
                 ...prev,
                 fecha_inicio: nuevaFecha,
-                cantidad_horas: calcularHoras(nuevaFecha, prev.fecha_cierre),
+                cantidad_horas: calcularHorasLaborables(nuevaFecha, prev.fecha_cierre),
               }));
             }}
             className="border p-2 w-full mb-2"
@@ -443,7 +446,7 @@ useEffect(() => {
               setPeriodo(prev => ({
                 ...prev,
                 fecha_cierre: nuevaFecha,
-                cantidad_horas: calcularHoras(prev.fecha_inicio, nuevaFecha),
+                cantidad_horas: calcularHorasLaborables(prev.fecha_inicio, nuevaFecha),
               }));
             }}
             className="border p-2 w-full mb-2"

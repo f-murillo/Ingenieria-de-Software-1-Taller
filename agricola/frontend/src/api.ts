@@ -33,8 +33,6 @@ export interface ActividadCategoria {
   monto: number;
 }
 
-// api.ts
-
 // Eliminar periodo
 export async function eliminarPeriodo(id: number) {
   const response = await fetch(`${API_URL}/api/actividades_periodo/${id}`, {
@@ -49,13 +47,23 @@ export async function eliminarPeriodo(id: number) {
 }
 // Actualizar periodo
 
-export async function actualizarPeriodo(periodo: any) {
+export async function actualizarPeriodo(periodo: ActividadPeriodo) {
+  const body = {
+    actividad: periodo.actividad,
+    accion: periodo.accion,
+    fecha_inicio: periodo.fecha_inicio,
+    fecha_cierre: periodo.fecha_cierre,
+    responsable: periodo.responsable,
+    monto: periodo.monto,
+    cantidad_horas: periodo.cantidad_horas,
+  };
+
   const response = await fetch(`${API_URL}/api/actividades_periodo/${periodo.id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(periodo),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -64,6 +72,7 @@ export async function actualizarPeriodo(periodo: any) {
 
   return await response.json();
 }
+
 
 // Obtener periodos
 export async function obtenerActividadesPeriodo(): Promise<ActividadPeriodo[]> {
@@ -90,7 +99,9 @@ export async function crearActividadPeriodo(
   return res.json(); // aquí recibes { mensaje, id }
 }
 
-// Crear cantidad
+// ------------------- ACTIVIDADES CANTIDAD -------------------
+
+// Crear recurso humano
 export async function crearActividadCantidad(
   cantidad: Omit<ActividadCantidad, "id">
 ): Promise<void> {
@@ -102,7 +113,47 @@ export async function crearActividadCantidad(
   if (!res.ok) throw new Error("Error al crear cantidad");
 }
 
-// Crear categoría
+// Obtener TODOS los recursos humanos
+export async function obtenerTodosRecursosHumanos(): Promise<ActividadCantidad[]> {
+  const res = await fetch(`${API_URL}/api/actividades_cantidad`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error("Error al obtener recursos humanos");
+  return await res.json();
+}
+
+// Obtener recursos humanos de una actividad específica
+export async function obtenerActividadesCantidad(periodoId: number): Promise<ActividadCantidad[]> {
+  const res = await fetch(`${API_URL}/api/actividades_cantidad/${periodoId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error("Error al obtener recursos humanos");
+  return await res.json();
+}
+
+// Actualizar recurso humano
+export async function actualizarActividadCantidad(cantidad: ActividadCantidad): Promise<void> {
+  const res = await fetch(`${API_URL}/api/actividades_cantidad/${cantidad.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cantidad),
+  });
+  if (!res.ok) throw new Error("Error al actualizar recurso humano");
+}
+
+// Eliminar recurso humano
+export async function eliminarActividadCantidad(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/api/actividades_cantidad/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Error al eliminar recurso humano");
+}
+
+// ------------------- ACTIVIDADES CATEGORIA -------------------
+
+// Crear categoría (insumos y materiales)
 export async function crearActividadCategoria(
   categoria: Omit<ActividadCategoria, "id">
 ): Promise<void> {
@@ -113,6 +164,45 @@ export async function crearActividadCategoria(
   });
   if (!res.ok) throw new Error("Error al crear categoría");
 }
+
+// Obtener todos los insumos de todas las actividades
+export async function obtenerTodosActividadesCategoria(): Promise<ActividadCategoria[]> {
+  const res = await fetch(`${API_URL}/api/actividades_categoria`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error("Error al obtener todos los insumos");
+  return await res.json();
+}
+
+// Obtener insumos de una actividad específica
+export async function obtenerActividadesCategoria(periodoId: number): Promise<ActividadCategoria[]> {
+  const res = await fetch(`${API_URL}/api/actividades_categoria/${periodoId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error("Error al obtener insumos");
+  return await res.json();
+}
+
+// Actualizar insumo/material
+export async function actualizarActividadCategoria(categoria: ActividadCategoria): Promise<void> {
+  const res = await fetch(`${API_URL}/api/actividades_categoria/${categoria.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(categoria),
+  });
+  if (!res.ok) throw new Error("Error al actualizar insumo");
+}
+
+// Eliminar insumo/material
+export async function eliminarActividadCategoria(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/api/actividades_categoria/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Error al eliminar insumo");
+}
+
 
 // Interfaz para los eventos del logger
 

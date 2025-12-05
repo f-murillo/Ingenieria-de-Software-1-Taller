@@ -315,28 +315,74 @@ func main() {
 		http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
 	})
 
+	// Recursos humanos (actividades_cantidad)
 	http.HandleFunc("/api/actividades_cantidad", func(w http.ResponseWriter, r *http.Request) {
 		habilitarCORS(w)
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		if r.Method == http.MethodPost {
+		switch r.Method {
+		case http.MethodGet:
+			handlers.ObtenerTodosRecursosHumanos(w, r)
+		case http.MethodPost:
 			handlers.CrearActividadCantidad(w, r)
-		} else {
+		default:
 			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
 		}
 	})
 
+	http.HandleFunc("/api/actividades_cantidad/", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		switch r.Method {
+		case http.MethodGet:
+			handlers.ObtenerActividadesCantidad(w, r)
+		case http.MethodPut:
+			handlers.ActualizarActividadCantidad(w, r)
+		case http.MethodDelete:
+			handlers.EliminarActividadCantidad(w, r)
+		default:
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// Insumos y materiales por actividad (actividades_categoria)
 	http.HandleFunc("/api/actividades_categoria", func(w http.ResponseWriter, r *http.Request) {
 		habilitarCORS(w)
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		if r.Method == http.MethodPost {
+		switch r.Method {
+		case http.MethodPost:
 			handlers.CrearActividadCategoria(w, r)
-		} else {
+		case http.MethodGet:
+			// 👇 Nuevo: obtener todos los insumos de todas las actividades
+			handlers.ObtenerTodosActividadesCategoria(w, r)
+		default:
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/api/actividades_categoria/", func(w http.ResponseWriter, r *http.Request) {
+		habilitarCORS(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		switch r.Method {
+		case http.MethodGet:
+			// Obtener insumos de una actividad específica (por periodo_id)
+			handlers.ObtenerActividadesCategoria(w, r)
+		case http.MethodPut:
+			handlers.ActualizarActividadCategoria(w, r)
+		case http.MethodDelete:
+			handlers.EliminarActividadCategoria(w, r)
+		default:
 			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
 		}
 	})

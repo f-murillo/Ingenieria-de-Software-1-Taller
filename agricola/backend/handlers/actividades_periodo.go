@@ -3,12 +3,14 @@ package handlers
 import (
 	"agricola/db"
 	"agricola/models"
+	"agricola/utils"
 	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
+// Crear nueva actividad periodo
 func CrearActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -19,18 +21,17 @@ func CrearActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Guardamos el resultado del Exec
 	result, err := db.DB.Exec(`
         INSERT INTO actividades_periodo (actividad, accion, fecha_inicio, fecha_cierre, cantidad_horas, responsable, monto)
         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		periodo.Actividad, periodo.Accion, periodo.FechaInicio, periodo.FechaCierre, periodo.CantidadHoras, periodo.Responsable, periodo.Monto,
+		periodo.Actividad, periodo.Accion, periodo.FechaInicio, periodo.FechaCierre,
+		periodo.CantidadHoras, periodo.Responsable, periodo.Monto,
 	)
 	if err != nil {
 		http.Error(w, "Error al insertar actividad periodo", http.StatusInternalServerError)
 		return
 	}
 
-	// Obtenemos el ID insertado
 	id, _ := result.LastInsertId()
 
 	w.WriteHeader(http.StatusCreated)
@@ -40,12 +41,12 @@ func CrearActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// Obtener todas las actividades periodo
 func ObtenerActividadesPeriodo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept")
 
 	rows, err := db.DB.Query(`
         SELECT id, actividad, accion, fecha_inicio, fecha_cierre, cantidad_horas, responsable, monto
@@ -59,10 +60,10 @@ func ObtenerActividadesPeriodo(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	var actividades []models.ActividadPeriodo
-
 	for rows.Next() {
 		var a models.ActividadPeriodo
-		if err := rows.Scan(&a.ID, &a.Actividad, &a.Accion, &a.FechaInicio, &a.FechaCierre, &a.CantidadHoras, &a.Responsable, &a.Monto); err != nil {
+		if err := rows.Scan(&a.ID, &a.Actividad, &a.Accion, &a.FechaInicio, &a.FechaCierre,
+			&a.CantidadHoras, &a.Responsable, &a.Monto); err != nil {
 			http.Error(w, "Error al leer actividades periodo", http.StatusInternalServerError)
 			return
 		}
@@ -77,8 +78,7 @@ func ObtenerActividadesPeriodo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(actividades)
 }
 
-// handler.go
-
+// Actualizar actividad periodo y recalcular recursos humanos asociados
 func ActualizarActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -88,7 +88,7 @@ func ActualizarActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extraer ID desde la URL: /api/actividades_periodo/{id}
+	// Extraer ID desde la URL
 	path := strings.TrimPrefix(r.URL.Path, "/api/actividades_periodo/")
 	idStr := strings.Split(path, "/")[0]
 	id, err := strconv.Atoi(idStr)
@@ -97,7 +97,7 @@ func ActualizarActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Decodificar cuerpo JSON (ahora incluye cantidad_horas)
+	// Decodificar cuerpo JSON
 	var datos struct {
 		Actividad     string  `json:"actividad"`
 		Accion        string  `json:"accion"`
@@ -108,11 +108,11 @@ func ActualizarActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 		CantidadHoras int     `json:"cantidad_horas"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&datos); err != nil {
-		http.Error(w, "Error al decodificar JSON", http.StatusBadRequest)
+		http.Error(w, "Error al decodificar JSON: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Ejecutar UPDATE en la base de datos (ahora guarda cantidad_horas)
+	// Actualizar actividad principal
 	_, err = db.DB.Exec(`
         UPDATE actividades_periodo
         SET actividad = ?, accion = ?, fecha_inicio = ?, fecha_cierre = ?,
@@ -123,9 +123,23 @@ func ActualizarActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 		datos.Responsable, datos.Monto, datos.CantidadHoras, id,
 	)
 	if err != nil {
-		http.Error(w, "Error al actualizar actividad periodo", http.StatusInternalServerError)
+		http.Error(w, "Error al actualizar actividad periodo: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Recalcular montos de recursos humanos asociados
+	_, err = db.DB.Exec(`
+        UPDATE actividades_cantidad
+        SET monto = cantidad * costo * ?
+        WHERE periodo_id = ?
+    `, datos.CantidadHoras, id)
+	if err != nil {
+		http.Error(w, "Error al recalcular montos de recursos humanos: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Recalculamos el monto
+	_ = utils.RecalcularMontosActividad(id)
 
 	// Devolver actividad actualizada
 	actividad := models.ActividadPeriodo{
@@ -141,6 +155,7 @@ func ActualizarActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(actividad)
 }
 
+// Eliminar actividad periodo y dependencias
 func EliminarActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -150,7 +165,7 @@ func EliminarActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extraer ID desde la URL: /api/actividades_periodo/{id}
+	// Extraer ID desde la URL
 	path := strings.TrimPrefix(r.URL.Path, "/api/actividades_periodo/")
 	idStr := strings.Split(path, "/")[0]
 	id, err := strconv.Atoi(idStr)
@@ -159,27 +174,22 @@ func EliminarActividadPeriodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Primero borrar las dependencias (cantidad y categoría)
-	_, err = db.DB.Exec(`DELETE FROM actividades_cantidad WHERE periodo_id = ?`, id)
-	if err != nil {
+	// Borrar dependencias
+	if _, err := db.DB.Exec(`DELETE FROM actividades_cantidad WHERE periodo_id = ?`, id); err != nil {
 		http.Error(w, "Error al eliminar cantidades", http.StatusInternalServerError)
 		return
 	}
 
-	_, err = db.DB.Exec(`DELETE FROM actividades_categoria WHERE periodo_id = ?`, id)
-	if err != nil {
+	if _, err := db.DB.Exec(`DELETE FROM actividades_categoria WHERE periodo_id = ?`, id); err != nil {
 		http.Error(w, "Error al eliminar categorías", http.StatusInternalServerError)
 		return
 	}
 
-	// Finalmente borrar el periodo
-	_, err = db.DB.Exec(`DELETE FROM actividades_periodo WHERE id = ?`, id)
-	if err != nil {
+	// Borrar actividad principal
+	if _, err := db.DB.Exec(`DELETE FROM actividades_periodo WHERE id = ?`, id); err != nil {
 		http.Error(w, "Error al eliminar actividad periodo", http.StatusInternalServerError)
 		return
 	}
 
-	// Respuesta de éxito
 	w.WriteHeader(http.StatusNoContent)
-	_ = LogEvento("Eliminar actividad periodo", "actividades_periodo")
 }

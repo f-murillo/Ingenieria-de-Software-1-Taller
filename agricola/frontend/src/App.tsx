@@ -8,10 +8,8 @@ import VistaLabores from './VistaLabores';
 import VistaEquipos from './VistaEquipos';
 import VistaEventos from './Eventos';
 import VistaUnidades from './VistaUnidades';
-import FormularioActividades from "./Actividades_periodo";
+import VistaPlanAccion from "./VistaPlanAccion"; // 👈 nuevo contenedor con subpestañas
 import type { Usuario } from './api';
-
-
 
 function App() {
   const [usuarioAutenticado, setUsuarioAutenticado] = useState<Usuario | null>(null);
@@ -65,7 +63,7 @@ function App() {
     }
 
     if (vista === 'actividades' && usuarioAutenticado?.administrador) {
-    return <VistaActividades usuario={usuarioAutenticado} mostrarToast={mostrarToast} />;
+      return <VistaActividades usuario={usuarioAutenticado} mostrarToast={mostrarToast} />;
     }
 
     if (vista === 'labores' && usuarioAutenticado?.administrador) {
@@ -84,9 +82,9 @@ function App() {
       return <VistaUnidades mostrarToast={mostrarToast}/>;
     }
 
+    // 👇 aquí el cambio: en vez de FormularioActividades, usamos VistaPlanAccion
     if (vista === 'formulario-actividades' && usuarioAutenticado?.administrador) {
-     
-      return <FormularioActividades />;
+      return <VistaPlanAccion />;
     }
 
     return <p>Vista no disponible</p>;
