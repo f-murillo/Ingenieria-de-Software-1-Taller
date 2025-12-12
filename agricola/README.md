@@ -1,113 +1,66 @@
-# Taller de Ingeniería de Software 1 — Autenticación
+# Taller de Ingeniería de Software 1  
 
-Esta parte implementa un sistema básico de autenticación web utilizando Go, SQLite y cookies seguras. Incluye registro, login, validación de sesión con tokens, protección CSRF y logout
+### Integrantes
+
+- Franco Murillo - murillo.franc@gmail.com  
+- Leonardo Dolande - leodolande84@gmail.com   
+
+### Agile Coach
+
+Jean Carlos Guzmán -  jeancguzman2050@gmail.com
+
+### Sobre el proyecto  
+- Este proyecto implementa un sistema para la creación y gestión de proyectos agrícolas. Cuenta con autenticación para distintos tipos de usuarios, gestión de actividades, recursos humanos, insumos y costos.    
+- Está desarrollado en **Go** para la parte del backend, con **SQLite** como base de datos, y con **React** y **Typescript** para la parte del frontend. Cuenta con pruebas unitarias y de integración tanto para el backend como para el frontend.
 
 ---
 
 ## Estructura del Proyecto
 
-Ingenieria-de-Software-1-Taller  
-├── go.mod              &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;# Módulo Go: define dependencias y nombre del proyecto  
-├── go.sum              &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;# Suma de verificación de dependencias  
-├── login               &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;# Ejecutable compilado (opcional, generado por go build)  
-└── cmd/  
-    └── login/  
-        ├── main.go     &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;# Punto de entrada: servidor HTTP, handlers y lógica principal  
-        ├── db.go       &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;# Inicialización de la base de datos SQLite y creación de tabla users  
-        ├── session.go  &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;# Validación de sesión y protección contra CSRF  
-        └── utils.go    &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;# Funciones auxiliares: hashing, comparación de contraseñas, generación de tokens  
-
+agrícola      
+├── backend/                                        &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Carpeta con  todo lo relacionado al backend del sistema 
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── db/              &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Carpeta con los archivos para manejar la conexión a la base de datos  
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── handlers/        &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Carpeta con los archivos con todos los endpoints del sistema  
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── models/          &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Carpeta con los tipos usados en el proyecto  
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── utils/           &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Carpeta con archivo auxiliar   
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── go.mod           &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Módulo Go: dependencias y nombre del proyecto     
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── go.sum           &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Sumario de verificación de dependencias    
+|&ensp;&ensp;&ensp;&ensp;&ensp;├─ main.go           &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Punto de entrada: servidor HTTP, rutas principales   
+├── frontend/                                        &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Carpeta con  todo lo relacionado al frontend del sistema    
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── cypress/         &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Carpeta con pruebas cypress  
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── node_modules/    &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Carpeta con dependencias de Node  
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── src/             &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Carpeta con los componentes .ts y .tsx del proyecto
+|&ensp;&ensp;&ensp;&ensp;&ensp;├── .env             &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Configuración de variable de entorno
 
 ---
 
 ## Base de Datos
 
-- Motor: SQLite
-- Archivo: `users.db` (creado automáticamente en la raíz del proyecto)
-- Tabla: `users`
-- Campos:
-  - `id`: entero autoincremental
-  - `username`: texto único
-  - `hashed_password`: contraseña cifrada con bcrypt
-  - `session_token`: token de sesión (nullable)
-  - `csrf_token`: token CSRF (nullable)
-  - `role`: rol del usuario (por defecto: "user")
-  - `created_at`: fecha de creación
+- Motor: **SQLite**
+- Tablas principales:
+  - `users`: usuarios registrados con contraseñas cifradas
+  - `actividades_periodo`: actividades planificadas con fechas, horas y responsable
+  - `actividades_cantidad`: recursos humanos asociados a cada actividad
+  - `actividades_categoria`: insumos/materiales asociados a cada actividad
 
 ---
 
-##  Seguridad y Autenticación
+## Pruebas
 
-- Contraseñas cifradas con bcrypt
-- Tokens de sesión y CSRF generados aleatoriamente
-- Cookies:
-  - `session_token`: HttpOnly (no accesible por JavaScript)
-  - `csrf_token`: accesible por JavaScript para enviar en headers
-  - `username`: accesible por JavaScript para mostrar en la UI
-- Validación de sesión y CSRF en endpoints protegidos
-
+- **Backend (Go):**  
+  - Se usan `httptest` y SQLite en memoria para validar creación, actualización y eliminación de registros.  
+- **Frontend (React + Cypress):**  
+  - Pruebas end-to-end para login, gestión de insumos y recursos humanos.  
+  - Uso de `data-testid` para seleccionar elementos de forma estable.  
 ---
 
-## Endpoints HTTP
+## Ejecución
 
-### `POST /register`
+1. **Backend (Go): Desde el directorio backend**
+   ```bash
+   go run .
 
-Registra un nuevo usuario.
-
-- **Body (form-urlencoded):**
-  - `username`: mínimo 8 caracteres
-  - `password`: mínimo 8 caracteres
-- **Respuestas:**
-  - `201 Created`: usuario registrado
-  - `409 Conflict`: usuario ya existe
-  - `406 Not Acceptable`: datos inválidos
-
----
-
-### `POST /login`
-
-Autentica al usuario y genera tokens.
-
-- **Body (form-urlencoded):**
-  - `username`
-  - `password`
-- **Respuestas:**
-  - `200 OK`: login exitoso, cookies generadas
-  - `401 Unauthorized`: credenciales inválidas
-- **Cookies generadas:**
-  - `session_token` (HttpOnly)
-  - `csrf_token` (JS-accessible)
-  - `username` (JS-accessible)
-
----
-
-### `POST /protected`
-
-Endpoint protegido que requiere sesión activa y validación CSRF.
-
-- **Headers:**
-  - `X-CSRF-Token`: debe coincidir con la cookie `csrf_token`
-- **Cookies requeridas:**
-  - `session_token`
-- **Respuestas:**
-  - `200 OK`: acceso autorizado
-  - `401 Unauthorized`: sesión inválida o CSRF incorrecto
-
----
-
-### `POST /logout`
-
-Cierra la sesión del usuario.
-
-- **Cookies requeridas:**
-  - `session_token`
-  - `csrf_token`
-- **Headers:**
-  - `X-CSRF-Token`
-- **Acciones:**
-  - Elimina tokens en la base de datos
-  - Expira cookies en el navegador
-- **Respuestas:**
-  - `200 OK`: logout exitoso
-  - `401 Unauthorized`: sesión inválida
-
+2. **Frontend: Desde el directorio frontend**
+   ```bash
+   npm install
+   npm run dev
